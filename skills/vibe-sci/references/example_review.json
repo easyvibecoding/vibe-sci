@@ -1,0 +1,55 @@
+{
+  "Summary": "The paper proposes AttenV2, which replaces softmax normalisation in multi-head self-attention with a per-pair sigmoid gate using a learned per-head bias term. The authors report a 3.2% geometric-mean perplexity reduction across four language-modelling benchmarks at 124M parameters, an 11% FLOPs-per-token reduction, and cross-modality gains on ImageNet-1k and HumanEval. A single ablation confirms the learned bias is load-bearing. The claim is that the change is a drop-in, one-line replacement that removes pairwise competition between tokens.",
+  "Strengths": [
+    "The proposed modification is minimal, easy to reproduce, and directly targets a well-known property of softmax attention (forced pairwise competition), which is a conceptually clean motivation.",
+    "Evaluation spans multiple modalities (language, vision, code), which, if the numbers are reliable, would suggest broad applicability rather than a benchmark-specific artefact.",
+    "The ablation on the learned bias `b` is well-chosen: showing that `b=0` underperforms vanilla is exactly the control needed to rule out 'sigmoid alone' as the source of the gain.",
+    "The FLOPs analysis and the explicit acknowledgement that only 124M-scale decoder-only results are reported demonstrate some methodological self-awareness."
+  ],
+  "Weaknesses": [
+    "Severe empirical thinness: a single seed, a single model size (124M), no confidence intervals, and no comparison against stronger baselines (e.g., sigmoid attention variants from Ramapuram et al. 2024, gated linear attention, or norm-based attention). The central 3.2% geometric-mean claim cannot be distinguished from seed noise, and the author's own ablation (15.9 vs 15.8 vanilla on WikiText) sits well inside typical run-to-run variance.",
+    "Numerical inconsistencies raise concerns about the experimental pipeline: the 11% FLOPs reduction is implausible for a change that only substitutes the normalisation step — softmax is a tiny fraction of attention FLOPs (dominated by the two QK^T and AV matmuls), so an 11% per-token reduction is not mechanistically explained and conflicts with standard attention FLOP accounting. The 1.5T-token budget at 124M is also ~10× Chinchilla-optimal and is neither justified nor cited.",
+    "Novelty is overstated and related work is inadequate. Sigmoid/element-wise gated attention has been explored repeatedly (e.g., Ramapuram et al. 'Theory, Analysis, and Best Practices for Sigmoid Self-Attention' 2024; gMLP; GAU in Primer). None are cited or compared, so the 'one-line change' framing misrepresents the state of the art.",
+    "Cross-modality claims (ImageNet-1k, HumanEval) appear in the abstract but receive no methodological description, no table, no training recipe, and no ablation — these numbers are effectively unsupported assertions.",
+    "The paper does not address well-known failure modes of non-normalised attention: output magnitude growing with sequence length, training instability, and degraded length generalisation. A learned scalar bias per head is unlikely to fully compensate, and no length-generalisation or long-context probe is provided."
+  ],
+  "Originality": 2,
+  "Quality": 1,
+  "Clarity": 3,
+  "Significance": 2,
+  "Soundness": 1,
+  "Presentation": 2,
+  "Contribution": 1,
+  "Overall": 3,
+  "Confidence": 4,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper proposes AttenV2, which replaces softmax normalisation in multi-head self-attention with a per-pair sigmoid gate using a learned per-head bias term. The authors report a 3.2% geometric-mean perplexity reduction across four language-modelling benchmarks at 124M parameters, an 11% FLOPs-per-token reduction, and cross-modality gains on ImageNet-1k and HumanEval. A single ablation confirms the learned bias is load-bearing. The claim is that the change is a drop-in, one-line replacement that removes pairwise competition between tokens.",
+      "Strengths": [
+        "The proposed modification is minimal, easy to reproduce, and directly targets a well-known property of softmax attention (forced pairwise competition), which is a conceptually clean motivation.",
+        "Evaluation spans multiple modalities (language, vision, code), which, if the numbers are reliable, would suggest broad applicability rather than a benchmark-specific artefact.",
+        "The ablation on the learned bias `b` is well-chosen: showing that `b=0` underperforms vanilla is exactly the control needed to rule out 'sigmoid alone' as the source of the gain.",
+        "The FLOPs analysis and the explicit acknowledgement that only 124M-scale decoder-only results are reported demonstrate some methodological self-awareness."
+      ],
+      "Weaknesses": [
+        "Severe empirical thinness: a single seed, a single model size (124M), no confidence intervals, and no comparison against stronger baselines (e.g., sigmoid attention variants from Ramapuram et al. 2024, gated linear attention, or norm-based attention). The central 3.2% geometric-mean claim cannot be distinguished from seed noise, and the author's own ablation (15.9 vs 15.8 vanilla on WikiText) sits well inside typical run-to-run variance.",
+        "Numerical inconsistencies raise concerns about the experimental pipeline: the 11% FLOPs reduction is implausible for a change that only substitutes the normalisation step — softmax is a tiny fraction of attention FLOPs (dominated by the two QK^T and AV matmuls), so an 11% per-token reduction is not mechanistically explained and conflicts with standard attention FLOP accounting. The 1.5T-token budget at 124M is also ~10× Chinchilla-optimal and is neither justified nor cited.",
+        "Novelty is overstated and related work is inadequate. Sigmoid/element-wise gated attention has been explored repeatedly (e.g., Ramapuram et al. 'Theory, Analysis, and Best Practices for Sigmoid Self-Attention' 2024; gMLP; GAU in Primer). None are cited or compared, so the 'one-line change' framing misrepresents the state of the art.",
+        "Cross-modality claims (ImageNet-1k, HumanEval) appear in the abstract but receive no methodological description, no table, no training recipe, and no ablation — these numbers are effectively unsupported assertions.",
+        "The paper does not address well-known failure modes of non-normalised attention: output magnitude growing with sequence length, training instability, and degraded length generalisation. A learned scalar bias per head is unlikely to fully compensate, and no length-generalisation or long-context probe is provided."
+      ],
+      "Originality": 2,
+      "Quality": 1,
+      "Clarity": 3,
+      "Significance": 2,
+      "Soundness": 1,
+      "Presentation": 2,
+      "Contribution": 1,
+      "Overall": 3,
+      "Confidence": 4,
+      "Decision": "Reject"
+    }
+  ]
+}
