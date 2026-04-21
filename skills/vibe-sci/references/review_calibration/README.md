@@ -1,6 +1,6 @@
 # Review calibration — reference paper / review pairs
 
-Captured 2026-04-21 from an end-to-end `/loop` of `vibe-sci review --backend claude-cli --ensemble 1` against 7 mock ML papers of varying quality, topic, and language. Three pairs with the most pedagogical value are preserved here; the full 7-round sweep report is in [`../../evals/2026-04-21_loop_7round_review_calibration.md`](../../evals/2026-04-21_loop_7round_review_calibration.md).
+Captured 2026-04-21 from an end-to-end `/loop` of `vibe-sci review --backend claude-cli --ensemble 1` against 7 mock ML papers plus 1 real published paper (FlashAttention-2, NeurIPS 2024). Four pairs with the most pedagogical value are preserved here; the full sweep report is in [`../../evals/2026-04-21_loop_7round_review_calibration.md`](../../evals/2026-04-21_loop_7round_review_calibration.md).
 
 Each pair shows what the reviewer produces for a specific paper archetype. Use them when:
 
@@ -35,8 +35,19 @@ Use this as proof that `review.py` handles non-English input without glue code �
 
 Use this as the "minimum-length-that-still-reviews" bound for your own drafts.
 
+### 4. `paper_real_flashattn2.md` + `review_real_flashattn2.json` — **Overall = 7, Decision = Accept (real NeurIPS 2024 paper)**
+
+Text extracted from Tri Dao's FlashAttention-2 (arXiv:2307.08691, NeurIPS 2024 Spotlight) via the ar5iv HTML mirror. The reviewer correctly decided **Accept**, scoring Significance=4 / Quality=3 / Soundness=3 / Presentation=3 / Confidence=4, and surfaced exactly the critiques a real reviewer at that venue gives:
+
+- "engineering refinements rather than new algorithmic ideas" — genuine limit on conceptual novelty
+- "evaluation restricted to a single GPU generation (A100); H100 mentioned anecdotally" — real scope limitation
+- "lacks ablation isolating the three improvements (non-matmul reduction / seqlen parallelism / Q-split warp partitioning)" — fair empirical ask
+- "numerical precision under FP16/BF16 not discussed" — real concern for a work targeting training
+
+Use this pair as **the Accept-grade anchor**. Its existence validates that the reviewer has full 1–10 dynamic range (the seven mocks span 1–4; this one reaches 7) and that Accept verdicts require genuine publishable quality — the reviewer isn't capped at 4 for anything sub-perfect, it's capped at 4 for anything with unresolved methodological flaws. If your own draft doesn't look like this one, it probably won't get Accept.
+
 ## What's **not** captured here
 
-- **No Accept-grade example.** Seven mock papers produced Decision = Reject across the board (Overall 1 → 4). A published NeurIPS paper would likely score ≥6; we don't ship one as a fixture because the mocks we could reasonably craft don't clear the bar.
-- **No ensemble=5 example.** All three captured reviews are ensemble=1 (single-shot). For ensemble aggregation correctness testing, prefer `review_01.json` at the parent `references/` level or regenerate with `--ensemble 5`.
-- **No PDF-input example.** The `review.py::_extract_pdf_text` branch (needs `pypdf` or `pymupdf4llm`) was not exercised this round.
+- **No 8–10 range example.** FlashAttention-2 at Overall=7 is the highest observed; scoring a 9 or 10 likely requires a paradigm-shifting work. Not ruled out, just not sampled.
+- **No ensemble=5 example.** All captured reviews are ensemble=1 (single-shot). For ensemble aggregation correctness testing, prefer `review_01.json` at the parent `references/` level or regenerate with `--ensemble 5`.
+- **No PDF-input example.** The `review.py::_extract_pdf_text` branch (needs `pypdf` or `pymupdf4llm`) was not exercised — this round used `.md` extracted from ar5iv HTML.
