@@ -171,9 +171,8 @@ def apply_env(cfg: BackendConfig) -> None:
 def probe_claude_proxy(url: str, timeout_s: float = 1.5) -> bool:
     """Deprecated — always returns ``False``.
 
-    Kept so ``cli.py``'s ``--retry-backend=hybrid`` fallback path (ported
-    from hermes-sci) degrades silently instead of erroring. vibe-sci has
-    no HTTP proxy to probe; the claude-cli backend calls ``claude``
-    directly.
+    Kept as a no-op shim for any legacy ported code that still calls it.
+    vibe-sci has no HTTP proxy to probe; the claude-cli backend calls
+    ``claude`` directly via subprocess.
     """
     return False

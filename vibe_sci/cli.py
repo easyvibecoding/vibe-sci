@@ -236,8 +236,8 @@ def build_parser() -> argparse.ArgumentParser:
     pw.add_argument("--no-parallel", action="store_true",
                     help="disable async parallel section generation")
     pw.add_argument("--concurrency", type=int, default=None,
-                    help="override concurrency limit (default: auto — 1 during "
-                         "MiniMax peak 15:00-17:30 Asia/Shanghai, 7 off-peak)")
+                    help="override concurrency limit (default: provider-specific "
+                         "ceiling from vibe_sci.llm.PROVIDER_CONCURRENCY)")
     pw.add_argument("-o", "--output", required=True, help="output directory")
     _add_retry_common(pw)
     pw.set_defaults(func=cmd_writeup)

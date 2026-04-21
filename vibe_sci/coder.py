@@ -1,13 +1,16 @@
-"""Coding agent — placeholder for Phase 2.
+"""Coding agent — placeholder.
 
-The design is: delegate coding-heavy steps to `claude -p` subprocess (via the
-hybrid claude_proxy) or to claude-code SDK directly. Skipping for Phase 1.
+The design is: delegate coding-heavy steps to the ``claude`` CLI via
+subprocess (the claude-cli backend in vibe_sci.config) or to the
+claude-code SDK directly. Not implemented — the current pipeline always
+skips the experiment stage.
 """
 from __future__ import annotations
 
 
 def run_coding_loop(*_args, **_kwargs):
     raise NotImplementedError(
-        "vibe_sci.coder ships in Phase 2. Current Phase-1 pipeline skips "
-        "the experiment stage."
+        "vibe_sci.coder is not implemented — the current pipeline skips the "
+        "experiment stage. Pass pre-computed results via --results-json or "
+        "--results-md to writeup/pipeline instead."
     )
