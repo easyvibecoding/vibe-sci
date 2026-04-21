@@ -9,6 +9,14 @@
   <strong>日本語</strong>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="https://www.python.org/downloads/"><img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-blue"></a>
+  <a href="https://github.com/easyvibecoding/vibe-sci/actions/workflows/tests.yml"><img alt="CI" src="https://github.com/easyvibecoding/vibe-sci/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="https://skills.sh/easyvibecoding/vibe-sci"><img alt="skills.sh" src="https://img.shields.io/badge/install-npx%20skills-black?logo=npm"></a>
+  <a href="https://agentskills.io/specification"><img alt="agentskills.io compliant" src="https://img.shields.io/badge/agentskills.io-compliant-brightgreen"></a>
+</p>
+
 # vibe-sci
 
 プロバイダ中立(Provider-neutral)な自律型 ML 研究論文ライター — **アイデア生成 → LaTeX 執筆 → ピアレビュー → 反ハルシネーション数値監査**。
