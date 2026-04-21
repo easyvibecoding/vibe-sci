@@ -1,0 +1,88 @@
+{
+  "num_ideas": 3,
+  "ideas": [
+    {
+      "Name": "spectral_gated_lora_vit",
+      "Title": "Spectral-Gated LoRA: Frequency-Aware Low-Rank Adapters for Vision Transformers",
+      "Short Hypothesis": "Routing LoRA updates through a learned spectral gate that separates low- and high-frequency components of attention and MLP activations will outperform standard LoRA at matched parameter budgets on fine-grained and texture-heavy benchmarks, because ViT fine-tuning predominantly shifts mid-to-high frequency representations that a single rank-r subspace compresses poorly.",
+      "Related Work": "LoRA (Hu et al., 2021) and its ViT-focused variants — AdaptFormer (Chen et al., 2022), VPT (Jia et al., 2022), SSF (Lian et al., 2022), FacT (Jie & Deng, 2023), and DoRA (Liu et al., 2024) — all treat the adapted subspace as spectrally uniform. Work on frequency analysis of ViTs (Park & Kim, 2022; Bai et al., 2022) shows attention behaves as a low-pass filter while MLP blocks inject high-frequency content, and spectral-bias studies of neural networks (Rahaman et al., 2019) suggest optimization dynamics differ sharply across bands. No existing PEFT method conditions the adapter's rank allocation on a per-token frequency decomposition of the hidden state, which is the gap this work targets.",
+      "Abstract": "Low-rank adapters compress fine-tuning updates into a single rank-r subspace, implicitly assuming the needed shift is spectrally uniform — an assumption that fails for vision transformers, whose attention and MLP blocks operate on different frequency bands. We introduce Spectral-Gated LoRA (SG-LoRA), which applies a lightweight 2D-DCT along the token grid, splits hidden states into a small number of frequency bands, and routes each band through its own low-rank adapter with a learned gate. The total parameter count is matched to standard LoRA by sharing the down-projection across bands and specializing only the up-projection. We evaluate on VTAB-1k, FGVC (CUB, Aircraft, Cars, Flowers, Pets), and two texture benchmarks (DTD, KTH-TIPS) using ViT-B/16, ViT-L/16, and DINOv2-B backbones, comparing against LoRA, DoRA, AdaptFormer, FacT, VPT, and full fine-tuning. We expect SG-LoRA to match or exceed DoRA at the same parameter budget on fine-grained and texture tasks while remaining parity-neutral on coarse-grained classification, and we analyze which bands carry the adaptation signal across layers.",
+      "Experiments": [
+        "1. Implement SG-LoRA as a drop-in replacement for LoRA in timm ViTs: 2D-DCT over the token grid (reshaped to sqrt(N) x sqrt(N) per head), partition frequencies into K=4 log-spaced bands, per-band up-projection with shared down-projection, softmax gate over bands conditioned on the CLS token.",
+        "2. Reproduce LoRA, DoRA, AdaptFormer, FacT, and VPT on VTAB-1k with ViT-B/16 under a single training recipe; lock the parameter budget at ~0.2%, ~0.5%, and ~1.0% of backbone weights for all methods.",
+        "3. Run SG-LoRA at the same three budgets on VTAB-1k; report per-group (Natural / Specialized / Structured) means and 19-task average over 3 seeds.",
+        "4. Fine-grained sweep: CUB-200, FGVC-Aircraft, Stanford Cars, Oxford Flowers, Oxford Pets at the 0.5% budget, same 3-seed protocol.",
+        "5. Texture sweep: DTD and KTH-TIPS-2b to stress high-frequency adaptation.",
+        "6. Scale study: repeat the 0.5% setting on ViT-L/16 and DINOv2-B to test whether the frequency-routing advantage survives larger backbones.",
+        "7. Ablations: (a) K in {1,2,4,8}, (b) uniform vs learned gate, (c) shared vs per-band down-projection, (d) DCT replaced by Haar wavelet and by random orthogonal basis, (e) gate conditioned on CLS vs per-token.",
+        "8. Analysis: per-layer gate entropy and per-band L2 of the adapter update, to identify which layers and bands carry the fine-tuning signal; cross-task correlation of gate patterns."
+      ],
+      "Risk Factors and Limitations": [
+        "The 2D-DCT assumes a square token grid — non-square inputs and windowed attention (Swin) need a different spectral transform.",
+        "The frequency advantage may vanish at ViT-L scale if larger backbones already separate bands across heads; the scale study is the main falsifier.",
+        "Per-band up-projections add a small memory overhead (K copies of B) even when parameter-matched, which must be reported honestly against wall-clock and peak-memory baselines.",
+        "Gains could be washed out by stronger data augmentation, so the comparison must hold the recipe fixed across methods.",
+        "2D-DCT over the token grid is not equivariant to the ViT's learned positional encoding, which may interact unpredictably with registers or rotary embeddings."
+      ],
+      "Interestingness": 8,
+      "Feasibility": 8,
+      "Novelty": 7
+    },
+    {
+      "Name": "layerwise_rank_from_fisher_curvature",
+      "Title": "Curvature-Allocated LoRA: One-Shot Fisher-Guided Rank Assignment for Vision Transformers",
+      "Short Hypothesis": "Allocating a fixed global rank budget across ViT layers in proportion to a one-shot Fisher-information estimate of each layer's task-relevant curvature — computed on a held-out calibration set before any fine-tuning — yields better accuracy than uniform-rank LoRA and matches or beats iterative rank-search methods (AdaLoRA) at a fraction of the training cost.",
+      "Related Work": "AdaLoRA (Zhang et al., 2023) and IncreLoRA (Zhang et al., 2023) allocate rank by pruning singular values during training, incurring extra optimization cycles; SaLoRA (Hu et al., 2023) and ALoRA (Liu et al., 2024) use gradient- or attention-based importance scores with similar online cost. Fisher information has a long history in pruning and continual learning (LeCun et al., 1990; Kirkpatrick et al., 2017; Theis et al., 2018) and in second-order optimization (Martens & Grosse, 2015), but its use for one-shot PEFT rank allocation in ViTs is, to our knowledge, untested. The research gap is whether a single pre-training-free curvature estimate is sufficient to match methods that revisit the allocation throughout training.",
+      "Abstract": "Parameter-efficient fine-tuning methods typically use a uniform rank across all layers, or pay the cost of iteratively re-allocating rank during training. We propose Curvature-Allocated LoRA (CA-LoRA), which estimates the diagonal empirical Fisher information for each attention and MLP weight on a small calibration set in a single forward-backward pass, aggregates it per layer, and allocates a fixed global rank budget by proportional rounding. Once allocated, training proceeds exactly as in vanilla LoRA with no further overhead. We evaluate on VTAB-1k, FGVC, and ImageNet-1k fine-tuning with ViT-B/16, ViT-L/16, and DINOv2-B, comparing against uniform-rank LoRA, AdaLoRA, IncreLoRA, and SaLoRA at matched budgets. We hypothesize that the Fisher-derived allocation recovers most of the gain of online methods while being 3-5x cheaper to train, and we analyze the stability of the allocation across calibration sets and task similarity.",
+      "Experiments": [
+        "1. Implement CA-LoRA: diagonal empirical Fisher on 128-512 calibration examples, per-layer aggregation (sum over weight entries of each attention/MLP block), softmax-temperature-controlled proportional rounding to integer ranks summing to the budget.",
+        "2. Baselines at matched global rank budget: uniform LoRA, AdaLoRA, IncreLoRA, SaLoRA — same recipe, 3 seeds.",
+        "3. VTAB-1k evaluation with ViT-B/16 at budgets equivalent to uniform r=4, r=8, r=16.",
+        "4. FGVC evaluation (CUB, Aircraft, Cars, Flowers, Pets) at r=8-equivalent budget.",
+        "5. ImageNet-1k full fine-tuning at r=16-equivalent to stress the method at scale.",
+        "6. Wall-clock and peak-memory comparison versus AdaLoRA / IncreLoRA, including calibration cost.",
+        "7. Calibration robustness: vary calibration set size {32, 128, 512, 2048}; vary class balance; measure rank-allocation Kendall tau across seeds.",
+        "8. Cross-task transfer: compute the allocation on a source task and apply it to a target task; measure the accuracy gap versus per-task allocation to characterize generalization of the pattern.",
+        "9. Analysis: correlation of the per-layer Fisher with per-layer update norm after training, to test whether Fisher is a good proxy for realized importance; study whether attention-vs-MLP splits are stable across backbones."
+      ],
+      "Risk Factors and Limitations": [
+        "Diagonal Fisher ignores cross-parameter curvature and may misallocate rank when layers interact strongly, which is the main theoretical weakness.",
+        "One-shot allocation cannot adapt to curriculum or loss-landscape changes during training; this is deliberate but may hurt on long schedules.",
+        "If uniform-rank LoRA is already near the task ceiling (common on VTAB-1k Natural), allocation methods will all look equivalent — the fine-grained and ImageNet settings are the real discriminators.",
+        "Calibration-set bias could produce allocations that overfit to a small sample, especially on long-tailed tasks.",
+        "If AdaLoRA's published numbers were obtained with a heavier training recipe, a fair comparison at matched compute may narrow rather than widen the gap."
+      ],
+      "Interestingness": 7,
+      "Feasibility": 9,
+      "Novelty": 6
+    },
+    {
+      "Name": "task_arithmetic_lora_hub",
+      "Title": "LoRA-Hub for ViTs: Compositional Task Arithmetic in the Low-Rank Subspace",
+      "Short Hypothesis": "For vision transformers, task-specific LoRA adapters can be linearly combined in weight space — with coefficients either uniform or learned from a handful of target-domain examples — to produce a single merged adapter that matches or exceeds the best single-task adapter on held-out compositions, provided the component adapters share their down-projection.",
+      "Related Work": "Task Arithmetic (Ilharco et al., 2023) merges full fine-tuned weights; TIES-Merging (Yadav et al., 2023) and DARE (Yu et al., 2024) reduce interference in full-weight merges; LoraHub (Huang et al., 2024) composes LoRAs for LLMs via few-shot black-box optimization; ZipLoRA (Shah et al., 2023) merges style and content LoRAs for diffusion. For classification ViTs, the compositional behavior of LoRA adapters is largely unstudied — existing PEFT-for-ViT work treats each downstream task in isolation. The gap: a systematic study of whether LoRA arithmetic works for ViT classification, what architectural constraint (shared A, shared B, or neither) makes it work, and whether the composition generalizes to unseen domain mixtures.",
+      "Abstract": "Task arithmetic has been demonstrated for full fine-tuned language models and for diffusion LoRAs, but its behavior for vision-transformer classification adapters remains uncharacterized. We train a bank of LoRA adapters on diverse source tasks (VTAB, FGVC, medical imaging, satellite, sketch) under three sharing regimes — independent, shared down-projection, and shared up-projection — and study merging via uniform averaging, TIES, DARE, and a few-shot learned combination. Evaluation is on (a) single held-out tasks to test generalization and (b) synthetic mixtures (e.g., satellite + medical) to test composition. We hypothesize that sharing the down-projection across tasks makes the A columns live in a common subspace and unlocks clean linear composition, while independent adapters interfere destructively. We further test whether a 16-example target-domain probe is enough to learn mixing coefficients that outperform the best single adapter.",
+      "Experiments": [
+        "1. Adapter bank: train LoRA (r=8) on 12 source tasks spanning VTAB-1k Natural/Specialized/Structured, FGVC-Aircraft, CUB, EuroSAT, PatchCamelyon, ISIC, Sketch, DomainNet-Clipart, under three sharing regimes — Independent, SharedA (common down-projection trained jointly in a round-robin), and SharedB — with ViT-B/16.",
+        "2. Merging methods: uniform average, TIES, DARE, LoraHub-style few-shot gradient-free coefficient search, and a simple few-shot learned scalar-per-adapter gate.",
+        "3. Held-out-task evaluation on 4 tasks not in the bank (DTD, Flowers, Pets, RESISC45): zero-shot merge (uniform over all 12) and few-shot merge (16 labeled examples).",
+        "4. Mixture evaluation: construct 6 synthetic mixtures (e.g., 70% satellite + 30% sketch) and compare merged adapters against both single-task adapters and joint-multi-task LoRA trained directly on the mixture.",
+        "5. Interference analysis: measure pairwise cosine similarity of BA products and of A columns across adapters under each sharing regime; correlate with merge-success.",
+        "6. Scale the bank from 4 to 12 tasks and measure how held-out-task performance grows.",
+        "7. Backbone ablation: repeat held-out evaluation on DINOv2-B and CLIP-ViT-B/16 to test whether stronger pretraining reduces the need for composition.",
+        "8. Failure-mode study: identify task pairs that actively hurt when merged, and test whether TIES/DARE rescue them.",
+        "9. Release the adapter hub with reproducible training recipes."
+      ],
+      "Risk Factors and Limitations": [
+        "Classification ViTs may offer less compositional structure than diffusion or LMs because a single softmax head must stay consistent — merging may work for the backbone but break the head.",
+        "SharedA training couples tasks and may hurt single-task accuracy; the paper must report the single-task cost of each sharing regime, not only merge gains.",
+        "Results could be dominated by which source tasks happen to be close to each target, making the 'compositionality' claim a rebranding of positive transfer.",
+        "LoraHub-style gradient-free search has high variance with small probe sets and needs careful seed reporting.",
+        "Merging classification heads is itself non-trivial; one option is to average the backbone adapters but train a small head on the few-shot probe — this blurs the line between task arithmetic and few-shot learning and must be discussed explicitly."
+      ],
+      "Interestingness": 8,
+      "Feasibility": 8,
+      "Novelty": 7
+    }
+  ]
+}

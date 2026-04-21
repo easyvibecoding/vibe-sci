@@ -1,0 +1,13 @@
+{
+  "title": "Spectral-Gated LoRA: Frequency-Aware Low-Rank Adapters for Vision Transformers",
+  "abstract": "Low-rank adapters compress fine-tuning updates into a single rank-r subspace, implicitly assuming the needed shift is spectrally uniform \u2014 an assumption that fails for vision transformers, whose attention and MLP blocks operate on different frequency bands. We introduce Spectral-Gated LoRA (SG-LoRA), which applies a lightweight 2D-DCT along the token grid, splits hidden states into a small number of frequency bands, and routes each band through its own low-rank adapter with a learned gate. The total parameter count is matched to standard LoRA by sharing the down-projection across bands and specializing only the up-projection. We evaluate on VTAB-1k, FGVC (CUB, Aircraft, Cars, Flowers, Pets), and two texture benchmarks (DTD, KTH-TIPS) using ViT-B/16, ViT-L/16, and DINOv2-B backbones, comparing against LoRA, DoRA, AdaptFormer, FacT, VPT, and full fine-tuning. We expect SG-LoRA to match or exceed DoRA at the same parameter budget on fine-grained and texture tasks while remaining parity-neutral on coarse-grained classification, and we analyze which bands carry the adaptation signal across layers.",
+  "sections": [
+    "introduction",
+    "related_work",
+    "method",
+    "experiments",
+    "results",
+    "discussion",
+    "conclusion"
+  ]
+}

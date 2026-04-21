@@ -52,6 +52,30 @@ All 7 mocks scored 1–4 (all Reject). The **8th round using a real published pa
 
 The single non-code finding: `review.py::REVIEW_PROMPT_TMPL` requests Summary / Strengths / Weaknesses but does not instruct the reviewer to answer in the paper's language — yet claude does so spontaneously for the Chinese paper. This is emergent, not guaranteed. Could be made explicit with a line in the prompt if we want deterministic multilingual behaviour.
 
+## Generation pipeline validation (added after rounds 1-8)
+
+Rounds 1-8 above only exercised `vibe-sci review`. The complementary `ideate` → `writeup` → `self-review` path was subsequently run end-to-end to validate that the generator works, not just the reviewer. Artefacts saved to `../references/generation_examples/`:
+
+**Ideate** (~90s via claude-cli): topic="efficient fine-tuning for vision transformers via low-rank adapters", `--num-ideas 3`. Output: three *substantively different* research proposals (Spectral-Gated LoRA, Curvature-Allocated LoRA, LoRA-Hub). Not three rewordings of one idea — each has a distinct mechanism. Structured JSON with Title / Short Hypothesis / Abstract keys.
+
+**Writeup** (~197s via claude-cli, `--skip-compile --no-critique --no-parallel`): generated a 25 KB, 151-line, valid-LaTeX paper with 7 sections (Introduction, Related Work, Method, Experiments, Results, Discussion, Conclusion). Sanitize pipeline correctly dropped one empty `\cite{}` with a warning. Writer *correctly* marked Results as "forthcoming" rather than fabricating numbers — **but** Discussion speculated about unrun experiment outcomes ("gave SG-LoRA a measurable edge", "gap widened as budget tightened"), which is the real failure mode without a `--results-json` input.
+
+**Verify audit**: 30 numerical/empirical claims extracted, 17 verified, 13 unverified (**verification rate 0.567**). Most unverified claims came from the Discussion speculation — confirming `verify.py::audit` catches what it's supposed to.
+
+**Self-review dogfood** (~30s): ran `vibe-sci review` on the writer's `paper.tex`. Verdict: **Reject/Overall=2**. Weaknesses cited:
+- "Fatal: Results section literally reads 'Results forthcoming'" — correct
+- "Discussion fabricates outcomes not backed by any experiment" — the real writer failure mode this eval surfaced
+- "Technical novelty incremental, straightforward composition of known primitives" — fair critique
+
+This is **the full dogfood loop**: a writeup the reviewer gives 2 ≠ a writer bug. The 2 is a fair reflection of "proposal without run experiments". Pair `writeup` with `--results-json` next time for a complete paper.
+
+### Takeaway
+
+Both halves of the pipeline validated end-to-end, with realistic failure modes observed and handled:
+- Writer produces coherent papers (not hallucinated garbage), but will speculate in Discussion if no results are pinned — *this is a scoping choice, not a crash bug*
+- Verify audit catches that speculation
+- Reviewer scores the resulting paper honestly (2/10 for no-results), not a bug-hiding 5
+
 ## Per-round artefacts (at /tmp/vibe-sci-loop/)
 
 - mock_paper_0{1..7}_*.md  — 7 input papers

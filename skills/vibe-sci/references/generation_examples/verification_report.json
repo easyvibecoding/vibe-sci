@@ -1,0 +1,220 @@
+{
+  "total_claims": 30,
+  "verified_count": 17,
+  "unverified_count": 13,
+  "verification_rate": 0.567,
+  "verified": [
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "is VTAB-1k on ViT-B/16, where we report pe"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "\\% setting on ViT-L/16 and DINOv2-B. All ru"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "e decay, batch size 16, up to 20 epochs, a"
+    },
+    {
+      "raw": "20",
+      "value": 20.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "atch size 16, up to 20 epochs, and the same"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ingle Apple M2 with 16\\,GB of unified memo"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "tch size is held at 16 and we keep model pl"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "cale study on ViT-L/16 and DINOv2-B showed"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "g; on Apple M2 with 16 GB unified memory th"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "tolerable for ViT-B/16 and ViT-L/16 at batc"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "ViT-B/16 and ViT-L/16 at batch 16 but woul"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "d ViT-L/16 at batch 16 but would become res"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "an supervised ViT-B/16 layers; disentanglin"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "ghts). We run ViT-B/16 at all three budgets"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "\\% setting on ViT-L/16 and DINOv2-B to prob"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "ingle Apple M2 with 16 GB of unified memory"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "ee backbones (ViT-B/16, ViT-L/16, DINOv2-B"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "es (ViT-B/16, ViT-L/16, DINOv2-B), under a"
+    }
+  ],
+  "unverified": [
+    {
+      "raw": "0.2%",
+      "value": 0.2,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "ed at approximately 0.2\\%, 0.5\\%, and 1.0\\% o"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "pproximately 0.2\\%, 0.5\\%, and 1.0\\% of backb"
+    },
+    {
+      "raw": "1.0%",
+      "value": 1.0,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "y 0.2\\%, 0.5\\%, and 1.0\\% of backbone weights"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "Structured) and the 19-task average over 3"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "-grained sweep (CUB-200, FGVC-Aircraft, Sta"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "KTH-TIPS-2b) at the 0.5\\% budget with the sam"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "cale, we repeat the 0.5\\% setting on ViT-L/16"
+    },
+    {
+      "raw": "21",
+      "value": 21.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "below the ImageNet-21k regime — so we can"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "ned benchmarks (CUB-200, FGVC-Aircraft, Sta"
+    },
+    {
+      "raw": "0.2%",
+      "value": 0.2,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "ee levels ($\\approx$0.2\\%, 0.5\\%, 1.0\\% of ba"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "ls ($\\approx$0.2\\%, 0.5\\%, 1.0\\% of backbone"
+    },
+    {
+      "raw": "1.0%",
+      "value": 1.0,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "pprox$0.2\\%, 0.5\\%, 1.0\\% of backbone weights"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "gets and repeat the 0.5\\% setting on ViT-L/16"
+    }
+  ]
+}

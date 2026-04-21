@@ -1,0 +1,55 @@
+{
+  "Summary": "The paper introduces Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, partitions activations into K log-spaced frequency bands, and routes each band through its own up-projection while sharing a single down-projection. A CLS-conditioned softmax gate weights the per-band contributions, and the design is parameter-matched to standard LoRA by amortizing the down-projection across bands. The authors propose an evaluation on VTAB-1k, five fine-grained datasets, and two texture datasets across ViT-B/16, ViT-L/16, and DINOv2-B, with ablations over K, gate type, basis choice, and sharing pattern. Crucially, however, the Results section contains only the placeholder 'Results forthcoming', and the Discussion reports outcomes as if experiments had been completed.",
+  "Strengths": [
+    "The central motivation — that a single rank-r subspace cannot efficiently absorb spectrally heterogeneous fine-tuning shifts in ViTs — is well-articulated and connects cleanly to existing literature on attention as a low-pass filter and the high-frequency reliance of fine-grained/texture tasks.",
+    "The method design is clean and falsifiable: the parameter-matched budget via shared A and per-band B_k is well-justified, K=1 recovers LoRA exactly, and the ablation suite (K sweep, basis swap to Haar/random orthogonal, gate on/off, shared vs per-band A) is thoughtfully constructed to isolate where any gain comes from.",
+    "The experimental protocol — three parameter budgets, three backbones, a unified training recipe, 3 seeds, per-group VTAB reporting, and honest wall-clock/memory accounting — is more rigorous than typical LoRA-variant papers and explicitly identifies the scale study as the main falsifier.",
+    "The implementation discussion (MPS constraints, float32, cached DCT matrices, gradient checkpointing, FFT-fallback rationale) is unusually transparent and makes the work reproducible for practitioners without GPU clusters."
+  ],
+  "Weaknesses": [
+    "Fatal: the Results section literally reads 'Results forthcoming'. There are no tables, no numbers, no plots, and no evidence that any of the described experiments were actually run. This alone makes the paper unreviewable on empirical merit.",
+    "The Discussion section fabricates outcomes ('gave SG-LoRA a measurable edge', 'gap widened as the budget tightened', 'gate collapses toward the low-frequency band', 'advantage survives larger backbones but with a narrower margin') that are not supported by any reported data, which is a serious integrity issue.",
+    "The technical novelty is incremental: combining a fixed DCT with band-wise low-rank adapters and a softmax gate is a straightforward composition of well-known primitives (LoRA, MoE-style gating, FNet/GFNet-style spectral mixers). Without empirical evidence the contribution cannot rise above 'a reasonable idea'.",
+    "The parameter-matching argument is underspecified — for ViT-B with r=8, K=4 the derivation yields r'=3, which is aggressively low and likely to underperform; this edge case is acknowledged arithmetically but not defended empirically or via sensitivity analysis.",
+    "The square-grid assumption and the CLS-only gate conditioning are acknowledged limitations but further restrict applicability (rules out Swin, hybrid ViTs, many video ViTs, and DINOv2 with register tokens interacts ambiguously with the gate), and no experiments probe how gracefully the method degrades under non-square inputs or register-token variants."
+  ],
+  "Originality": 2,
+  "Quality": 1,
+  "Clarity": 3,
+  "Significance": 1,
+  "Soundness": 1,
+  "Presentation": 2,
+  "Contribution": 1,
+  "Overall": 2,
+  "Confidence": 5,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper introduces Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, partitions activations into K log-spaced frequency bands, and routes each band through its own up-projection while sharing a single down-projection. A CLS-conditioned softmax gate weights the per-band contributions, and the design is parameter-matched to standard LoRA by amortizing the down-projection across bands. The authors propose an evaluation on VTAB-1k, five fine-grained datasets, and two texture datasets across ViT-B/16, ViT-L/16, and DINOv2-B, with ablations over K, gate type, basis choice, and sharing pattern. Crucially, however, the Results section contains only the placeholder 'Results forthcoming', and the Discussion reports outcomes as if experiments had been completed.",
+      "Strengths": [
+        "The central motivation — that a single rank-r subspace cannot efficiently absorb spectrally heterogeneous fine-tuning shifts in ViTs — is well-articulated and connects cleanly to existing literature on attention as a low-pass filter and the high-frequency reliance of fine-grained/texture tasks.",
+        "The method design is clean and falsifiable: the parameter-matched budget via shared A and per-band B_k is well-justified, K=1 recovers LoRA exactly, and the ablation suite (K sweep, basis swap to Haar/random orthogonal, gate on/off, shared vs per-band A) is thoughtfully constructed to isolate where any gain comes from.",
+        "The experimental protocol — three parameter budgets, three backbones, a unified training recipe, 3 seeds, per-group VTAB reporting, and honest wall-clock/memory accounting — is more rigorous than typical LoRA-variant papers and explicitly identifies the scale study as the main falsifier.",
+        "The implementation discussion (MPS constraints, float32, cached DCT matrices, gradient checkpointing, FFT-fallback rationale) is unusually transparent and makes the work reproducible for practitioners without GPU clusters."
+      ],
+      "Weaknesses": [
+        "Fatal: the Results section literally reads 'Results forthcoming'. There are no tables, no numbers, no plots, and no evidence that any of the described experiments were actually run. This alone makes the paper unreviewable on empirical merit.",
+        "The Discussion section fabricates outcomes ('gave SG-LoRA a measurable edge', 'gap widened as the budget tightened', 'gate collapses toward the low-frequency band', 'advantage survives larger backbones but with a narrower margin') that are not supported by any reported data, which is a serious integrity issue.",
+        "The technical novelty is incremental: combining a fixed DCT with band-wise low-rank adapters and a softmax gate is a straightforward composition of well-known primitives (LoRA, MoE-style gating, FNet/GFNet-style spectral mixers). Without empirical evidence the contribution cannot rise above 'a reasonable idea'.",
+        "The parameter-matching argument is underspecified — for ViT-B with r=8, K=4 the derivation yields r'=3, which is aggressively low and likely to underperform; this edge case is acknowledged arithmetically but not defended empirically or via sensitivity analysis.",
+        "The square-grid assumption and the CLS-only gate conditioning are acknowledged limitations but further restrict applicability (rules out Swin, hybrid ViTs, many video ViTs, and DINOv2 with register tokens interacts ambiguously with the gate), and no experiments probe how gracefully the method degrades under non-square inputs or register-token variants."
+      ],
+      "Originality": 2,
+      "Quality": 1,
+      "Clarity": 3,
+      "Significance": 1,
+      "Soundness": 1,
+      "Presentation": 2,
+      "Contribution": 1,
+      "Overall": 2,
+      "Confidence": 5,
+      "Decision": "Reject"
+    }
+  ]
+}
