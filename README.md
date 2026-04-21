@@ -9,9 +9,17 @@
   <a href="README.ja.md">日本語</a>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="https://www.python.org/downloads/"><img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-blue"></a>
+  <a href="https://github.com/easyvibecoding/vibe-sci/actions/workflows/tests.yml"><img alt="CI" src="https://github.com/easyvibecoding/vibe-sci/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="https://skills.sh/easyvibecoding/vibe-sci"><img alt="skills.sh" src="https://img.shields.io/badge/install-npx%20skills-black?logo=npm"></a>
+  <a href="https://agentskills.io/specification"><img alt="agentskills.io compliant" src="https://img.shields.io/badge/agentskills.io-compliant-brightgreen"></a>
+</p>
+
 # vibe-sci
 
-Provider-neutral autonomous ML research paper writer — **ideation → LaTeX writeup → peer review → anti-hallucination numerical audit**.
+**An autonomous ML research paper writer** — give it a topic, get back a compilable LaTeX draft with ideation, peer review, and an anti-hallucination numerical audit. Runs against any `claude -p` subprocess or OpenAI-compatible endpoint; no single-vendor lock-in, no Hermes runtime required.
 
 Spun out from [`hermes-sci`](https://github.com/easyvibecoding/hermes-sci) to remove the Hermes-runtime coupling (MiniMax peak-hour throttle, `~/.hermes/config.yaml` backend resolution) and conform to the open [agent skills](https://agentskills.io) standard. Works with any `claude -p` subprocess, an OpenAI-compatible endpoint, or a rule-based fallback — no single vendor required.
 
