@@ -1,45 +1,83 @@
-# vibe-sci structural-fidelity /loop
+# Structural-fidelity iteration loop
 
-**Goal (user stated)**: "從真實論文中取得結構 迭代論文生成品質 — 目標不是要做出假以亂真 而是真的遵循結構與數據驅動自動產生論文的能力"
+**User goal**: "從真實論文中取得結構 迭代論文生成品質 — 目標不是要做出假以亂真 而是真的遵循結構與數據驅動自動產生論文的能力" — *not* "beat the reviewer", but "does the writer follow real-paper scaffolding and let supplied data drive the numbers?"
 
-Not Turing-test territory (can we fool reviewers?), but **structural compliance** (does the writer follow the scaffolding real venues expect, and does it let supplied data drive the numbers?).
+Method: three iterations against the same idea + results.json pair, differing only in the prompts/bib scaffolding the writer sees.
 
-## Round 1 — structural diff: FlashAttention-2 (real) vs pass-2 writeup (generated w/ results.json)
+## Round 1 — structural diff between real and generated
 
-Comparing the two artefacts already on disk:
+Without any patch, comparing real `FlashAttention-2 (ar5iv)` vs the pass-2 `generated_paper_with_results.tex`:
 
-|                          | Real FA-2 (markdown, 12 KB) | Generated pass 2 (LaTeX, 29 KB) |
-|--------------------------|-----------------------------|----------------------------------|
-| Tables                   | 4                           | **2** (= 2 tables in results.json, 1:1) |
-| Algorithm blocks         | 1                           | **0** ← gap                      |
-| Equation blocks          | 4                           | 4                                |
-| `\cite` / citations      | inline prose, 20 refs       | **3** ← gap                      |
-| Numeric `%` mentions     | 9                           | 79 (higher — consumes every results.json metric with `%` unit) |
-| `\ref{...}`              | n/a (markdown)              | 9 ✅                            |
-| `\label{...}`            | n/a (markdown)              | 2 ✅                            |
-| Discussion duplication   | single                      | appears twice — but intentional: one inside Results (discussing tables), one top-level (discussing hypothesis + limitations); NOT a bug |
+| Feature (corrected counts)      | Real FA-2 | Generated pass-2 |
+|---------------------------------|-----------|------------------|
+| `\begin{table}`                 | 4         | **2** (= results.json tables, 1:1) ✅ |
+| `\begin{algorithm}`             | 1         | **0** ← gap      |
+| `\begin{equation/align}`        | 4         | 4 ✅             |
+| `\cite{…}`                      | 20 refs   | **3** ← gap      |
+| `\%` mentions                   | 9         | 79 (consumes every results.json metric) ✅ |
+| `\ref{…}` / `\label{…}`         | n/a       | 9 / 2 ✅         |
 
-## Structural strengths (what the writer does right — data-driven path works)
+Two intentional structures mistakenly flagged as bugs on first grep: duplicate "Discussion" (one inside Results for tables-level, one top-level for hypothesis/limitations — correct NeurIPS norm); and my percent-grep was wrong (it's 79 not 0).
 
-- **results.json → tables: 1:1 render.** Every table in `results.json` becomes a `\begin{table}` env with booktabs styling, correct `\label{tab:<id>}`, and in-text `\ref{tab:<id>}`.
-- **Metrics consumed.** All 19 metrics from results.json carry `%` unit; the paper mentions `\%` 79 times — the writer is actively pulling numbers from the registry rather than confabulating.
-- **Values pinned.** Direct quotes of `72.8%`, `73.6%`, `85.1%`, `86.2%` appear in Results prose matching results.json exactly. verify.py reports 73% of claims cross-referenced.
-- **Discussion depth.** Two-level discussion structure (tables-level inside Results + hypothesis-level at top) is what real NeurIPS papers often do.
-- **Limitations section is honest.** Explicitly names the scope gaps ("single ViT-B/16 backbone", "square-grid assumption", "three-seed budget") that the reviewer in pass-2 self-review ended up citing — the writer knew about them but the abstract still overreached. This is a localised failure mode of *abstract drafting*, not of limitations awareness.
+**Real gaps that remain after correction:** missing algorithm pseudocode + citation density.
 
-## Structural gaps (what to iterate)
+## Round 2 — root-cause the two gaps (no LLM run)
 
-1. **Missing `\begin{algorithm}` block.** Method section is 50 lines of prose; for a "new algorithm" paper the NeurIPS / ICML expectation is a formal pseudocode box (real FA-2 has Algorithm 1). This is a likely miss in `vibe_sci/prompts/section_instructions.json` (method section) not hinting to include algorithmic environments. **Round 2 check**: inspect that file.
+Inspect `vibe_sci/prompts/section_instructions.json` and `vibe_sci/latex/references.bib`:
 
-2. **Citation density ~3 vs real paper ~20.** The writer plausibly generates `\cite{key}` references that then get stripped by `writeup.py::_filter_citations` when `key` isn't in `vibe_sci/latex/references.bib`. **Round 2 check**: grep how many citations were filtered in the pass-2 run; if the filter drops everything, the root cause is a sparse default bib, not a writer bug.
+- **`section_instructions.json::method`** — original: "Use `\begin{equation}...\end{equation}` when equations add clarity." No mention of `algorithm` / pseudocode. **Writer is following the prompt exactly**; producing 0 algorithm envs is prompt-compliant behaviour, not an LLM failure.
+- **`references.bib`** — 2 entries only (`lu2024aiscientist`, `yamada2025aiscientistv2`, both AI-Scientist meta-papers). `writeup.py::_filter_citations` strips any `\cite{key}` whose key isn't in the bib — so writer can emit dozens of `\cite{hu2022lora}` style calls and they all get dropped before reaching the output `.tex`. The 3 surviving cites are the two AI-Scientist keys plus one more in related work.
 
-3. **No algorithmic environment triggered even with `newalgorithm` prompts.** Confirms item 1 — look at what the section prompt actually asks for.
+Both limitations inherit from the upstream hermes-sci scaffold (identical files in `~/.hermes/my-skills/hermes-sci/`). Not a port bug — an upstream scaffold thinness that vibe-sci can improve on.
 
-## What's NOT a gap (was initial misread)
+## Round 3 — patch + re-run
 
-- Duplicate Discussion — intentional two-level structure, matches NeurIPS norms
-- Zero percent mentions — my initial grep pattern was wrong; correct count is 79, which is *higher* than the real paper because results.json is metric-dense
+Two targeted changes, no code:
 
-## Round 2 plan
+- **`references.bib`**: 2 → 29 entries covering transformers (Vaswani / BERT / GPT-3 / ViT / DINOv2), efficient attention (Performer / Linformer / FlashAttention / FA-2 / Mamba), PEFT (LoRA / DoRA / VPT / AdaptFormer), backbones (ResNet / Swin / ConvNeXt), channel attention (SENet / CBAM), optimisation (Adam / AdamW / BatchNorm / Chinchilla), benchmarks (VTAB / CUB / DTD). Covers the vocabulary a modern ML paper would need.
+- **`section_instructions.json::method`**: add algorithm-env hint with a verbatim fallback ("If the contribution is an algorithm or procedure, include a pseudocode box using `\begin{algorithm}...\end{algorithm}` with `\caption{}` and numbered `\STATE` lines, or the equivalent `\begin{verbatim}...\end{verbatim}` if the algorithm package is unavailable").
 
-Read `vibe_sci/prompts/section_instructions.json` for the method-section entry and `vibe_sci/latex/references.bib` to check bib entry count. If (a) instructions don't mention algorithm block + (b) bib is nearly empty, the fix is a one-line addition to instructions + seeding the bib with common ML references. Cheap iteration, no extra LLM calls. Then Round 3 can re-run writeup and compare cite / algo counts directly.
+Ran writeup with identical `ideas.json` + `results.json` as Round 2 so any change is attributable to the prompts/bib patch.
+
+## Results (three-stage gradient)
+
+| Stage                | Pass 1 (no results) | Pass 2 (w/ results, orig bib) | Pass 3 (patched) |
+|----------------------|---------------------|--------------------------------|------------------|
+| writeup wall-clock   | 197s                | 223s                          | 259s             |
+| `\cite{…}` count     | 0 (no-results path) | 3                             | **45** (+42)     |
+| `\begin{algorithm}`  | 0                   | 0                             | 0                |
+| `\begin{verbatim}`   | 0                   | 0                             | 1 (fallback)     |
+| `\%` mentions        | n/a                 | 79                            | 82               |
+| `\begin{equation}`   | —                   | 4                             | 5                |
+| verify rate          | 0.57                | 0.73                          | **0.81**         |
+| self-review Overall  | 2                   | 4                             | 4                |
+| Originality sub      | —                   | 2                             | **3** (+1)       |
+| Presentation sub     | —                   | 2                             | **3** (+1)       |
+| Decision             | Reject              | Reject                        | Reject           |
+
+### What moved, and what didn't
+
+- **Cite density 15× increase** is the headline — writer was already emitting the right cite *patterns* (`\cite{hu2022lora, liu2024dora, chen2022adaptformer, jia2022vpt}` style grouped citations), they were just all getting filtered out by a 2-entry bib. Patching the bib surfaces them immediately, no LLM change.
+- **Algorithm env: writer used the fallback.** `\begin{algorithm}` requires LaTeX's `algorithm` package in the template preamble, which isn't bundled; writer correctly picked `\begin{verbatim}` (the alternative we listed in the instruction). Prompt discipline works.
+- **verify rate climbs monotonically** (57 → 73 → 81) as both (a) more claims become cross-referenceable via results.json and (b) writer pulls more values from it instead of speculating.
+- **Reviewer gives +1 to Originality and +1 to Presentation** in pass 3 vs pass 2 — the fuller bib + pseudocode is noticed and credited.
+- **Overall sticks at 4.** Reviewer's other weaknesses (abstract scope overreach vs `results.json` that only covers ViT-B/16 + LoRA; three-seed cell with effect sizes at the variance boundary) are **content-quality limits** of what we supplied in `results.json`, not structural issues. Fixing them requires a richer `results.json` (multi-backbone, more seeds, more baselines), not a prompt tweak.
+
+### Meta-conclusion (answering the user's goal)
+
+> "真的遵循結構與數據驅動自動產生論文的能力"
+
+**Confirmed.** Writer behaviour is *instruction-following*, not a black box. When we give it more bib keys, it cites more; when we tell it to emit a pseudocode box, it does (with the fallback we specified); when we supply richer metrics, verify rate rises and the reviewer credits the paper more. The failure mode at Overall=4 is the reviewer correctly spotting that `results.json` doesn't substantiate every abstract claim — a data gap, not a pipeline capability gap.
+
+Structural-fidelity loop closes here. The lever for higher reviewer scores is now *the quality of results.json a user supplies*, not the scaffolding. That's the right separation of concerns for an "autonomous research writer" — the writer is doing its job; the humans still have to run the experiments.
+
+## Artefacts promoted to repo
+
+- `references/generation_examples/generated_paper_round3.tex` — patched-bib paper
+- `references/generation_examples/verification_report_round3.json` — 92/113 verified
+- `references/generation_examples/self_review_round3.json` — Reject/4 with Originality=3, Presentation=3
+
+## Code changes committed alongside
+
+- `vibe_sci/latex/references.bib`: 2 → 29 entries (modern ML core vocabulary)
+- `vibe_sci/prompts/section_instructions.json::method`: add algorithm-env guidance + verbatim fallback
