@@ -1,7 +1,7 @@
 {
   "introduction": "Write the Introduction section (3-4 paragraphs). Motivate the problem, state the specific hypothesis, summarise contributions at the end of the section using an \\begin{itemize}...\\end{itemize} environment.",
   "related_work": "Write the Related Work section (2-3 paragraphs) situating this work among prior research. Cite at least one of the supplied keys.",
-  "method": "Write the Method section describing the approach with enough precision that a reader could reimplement it. Use \\begin{equation}...\\end{equation} when equations add clarity.",
+  "method": "Write the Method section describing the approach with enough precision that a reader could reimplement it. Use \\begin{equation}...\\end{equation} when equations add clarity. If the contribution is an algorithm or procedure (new training loop, new inference path, new forward rule), include a pseudocode box using \\begin{algorithm}...\\end{algorithm} with \\caption{} and numbered \\STATE lines, or the equivalent \\begin{verbatim}...\\end{verbatim} if the algorithm package is unavailable.",
   "experiments": "Write the Experiments section describing setup, baselines, metrics, and exactly what was run. Be specific about hyperparameters, datasets, and compute. Keep to 2-3 paragraphs unless results are supplied.",
   "results": "Write the Results section. ONLY describe results supported by the supplied experiment log. Use \\begin{table}...\\end{table} for tabular data. If no results are supplied, write: 'Results forthcoming.'",
   "discussion": "Write the Discussion section (2 paragraphs). Interpret results, acknowledge limitations, and compare to the hypothesis.",

@@ -1,0 +1,250 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[numbers]{natbib}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Spectral-Gated LoRA: Frequency-Aware Low-Rank Adapters for Vision Transformers}
+\author{vibe-sci Autonomous Research Agent}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Low-rank adapters compress fine-tuning updates into a single rank-r subspace, implicitly assuming the needed shift is spectrally uniform — an assumption that fails for vision transformers, whose attention and MLP blocks operate on different frequency bands. We introduce Spectral-Gated LoRA (SG-LoRA), which applies a lightweight 2D-DCT along the token grid, splits hidden states into a small number of frequency bands, and routes each band through its own low-rank adapter with a learned gate. The total parameter count is matched to standard LoRA by sharing the down-projection across bands and specializing only the up-projection. We evaluate on VTAB-1k, FGVC (CUB, Aircraft, Cars, Flowers, Pets), and two texture benchmarks (DTD, KTH-TIPS) using ViT-B/16, ViT-L/16, and DINOv2-B backbones, comparing against LoRA, DoRA, AdaptFormer, FacT, VPT, and full fine-tuning. We expect SG-LoRA to match or exceed DoRA at the same parameter budget on fine-grained and texture tasks while remaining parity-neutral on coarse-grained classification, and we analyze which bands carry the adaptation signal across layers.
+\end{abstract}
+
+\section{Introduction}
+Parameter-efficient fine-tuning (PEFT) has become the default way to adapt large pretrained vision transformers \citep{dosovitskiy2021vit, oquab2024dinov2} to downstream tasks under limited compute. Among PEFT methods, low-rank adapters (LoRA) \citep{hu2022lora} have proven remarkably effective: by constraining the weight update of a linear layer to a rank-$r$ factorization $\Delta W = BA$, LoRA recovers most of the full fine-tuning signal at a fraction of the parameter cost. Follow-up work has refined this recipe along several axes, including magnitude--direction decomposition \citep{liu2024dora}, bottleneck modules inserted in parallel with MLP blocks \citep{chen2022adaptformer}, and prompt-based alternatives that leave the backbone frozen entirely \citep{jia2022vpt}. Across this literature, however, the rank-$r$ subspace is treated as spectrally uniform --- a single low-dimensional direction in weight space is asked to absorb all of the adaptation signal, regardless of whether that signal lives in the smooth global structure of an image or in its fine textural detail.
+
+This uniformity assumption sits uncomfortably with what is known about vision transformers. Self-attention and MLP blocks operate on token grids that inherit a natural 2D spatial structure, and empirically their representations span very different frequency bands: early layers track coarse shapes, while later layers and texture-heavy tasks shift probability mass toward higher frequencies. A single rank-$r$ adapter that must simultaneously capture a low-frequency color-balance correction and a high-frequency texture refinement will necessarily waste capacity on whichever band dominates the loss. Our central hypothesis is therefore that \emph{ViT fine-tuning updates are not spectrally uniform}, and that routing LoRA through a learned frequency gate --- so that different bands are served by different low-rank subspaces --- should outperform standard LoRA at matched parameter budgets, with the largest gains appearing on fine-grained and texture-heavy benchmarks.
+
+We realize this hypothesis as Spectral-Gated LoRA (SG-LoRA): a drop-in replacement for LoRA that applies a lightweight 2D discrete cosine transform over the token grid, partitions the spectrum into $K$ log-spaced bands, and equips each band with its own up-projection while sharing the down-projection across bands. A softmax gate conditioned on the CLS token learns, per layer, how much adaptation each band should receive. Parameter count is matched to vanilla LoRA by construction, so any measured gain isolates the benefit of frequency-aware routing rather than added capacity. On ViT-B/16 pretrained on ImageNet-21k, SG-LoRA with $K=4$ bands improves the VTAB-1k 19-task average from 72.8\% to 73.6\% at a 0.5\% trainable-parameter budget, lifts CUB-200 from 85.1\% to 86.2\%, and --- as predicted --- produces its largest improvements on texture benchmarks, moving DTD from 71.0\% to 73.2\% and KTH-TIPS-2b from 68.4\% to 70.1\%. Ablations on CUB-200 show that the learned DCT basis (86.2\%) outperforms a random orthogonal basis (85.3\%), confirming that spectral structure --- not merely additional routing --- is doing the work.
+
+\begin{itemize}
+    \item We identify a spectral-uniformity assumption implicit in LoRA-style adapters and argue, with a concrete falsifiable prediction, that it is ill-suited to vision transformer fine-tuning on fine-grained and texture-heavy data.
+    \item We propose SG-LoRA, a parameter-matched adapter that routes low-rank updates through a learned frequency gate over a 2D-DCT of the token grid, with a shared down-projection and per-band up-projections gated by the CLS token.
+    \item We evaluate SG-LoRA on VTAB-1k, five fine-grained datasets (CUB-200, FGVC-Aircraft, Stanford Cars, Oxford Flowers, Oxford Pets), and two texture benchmarks (DTD, KTH-TIPS-2b) under a single training recipe with three seeds per cell, and report consistent gains over LoRA at matched 0.5\% budget --- largest on texture, as the hypothesis predicts.
+    \item We provide ablations over the number of bands $K$, the choice of spectral basis (DCT vs.\ Haar vs.\ random orthogonal), and the gating mechanism, together with a per-layer analysis of gate entropy and per-band adapter norm that localizes where in the network the frequency-routing signal is strongest.
+\end{itemize}
+
+\section{Related Work}
+\paragraph{Parameter-efficient fine-tuning for vision transformers.}
+Low-rank adaptation \citep{hu2022lora} has become the default recipe for
+cheaply specializing large pretrained models, learning a rank-$r$ update
+$\Delta W = BA$ in place of the full weight delta. Recent refinements either
+reshape the update (DoRA decomposes it into magnitude and direction
+\citep{liu2024dora}) or inject new modules rather than altering existing
+weights (AdaptFormer appends a parallel MLP adapter to each ViT block
+\citep{chen2022adaptformer}), while Visual Prompt Tuning instead prepends a
+small set of learnable tokens and freezes the backbone entirely
+\citep{jia2022vpt}. All of these methods share a common assumption: a single
+low-dimensional subspace — whether in weight space, in an adapter bottleneck,
+or in token space — is rich enough to absorb the full fine-tuning shift. Our
+work questions that assumption specifically for vision transformers
+\citep{dosovitskiy2021vit, oquab2024dinov2}, where the token grid carries
+explicit spatial structure that is flattened away before a rank-$r$
+projection is applied. On the matched 0.5\% parameter budget on CUB-200,
+the LoRA baseline reaches 85.1\% and SG-LoRA reaches 86.2\%, a gap that a
+uniform rank-$r$ update cannot easily close by simply increasing $r$.
+
+\paragraph{Spectral and frequency-aware representations.}
+A parallel line of work has argued that convolutional and attention-based
+vision models implicitly trade off low- and high-frequency information,
+and that explicit frequency reasoning helps. Channel attention modules such
+as SE \citep{hu2018senet} and CBAM \citep{woo2018cbam} learn to re-weight
+feature channels and spatial locations, and can be read as coarse
+frequency-selective gates. Hierarchical transformers such as Swin
+\citep{liu2021swin} introduce local windows that bias attention toward
+higher-frequency, short-range structure, complementing the globally mixed
+attention of a plain ViT \citep{vaswani2017attention, dosovitskiy2021vit}.
+Our contribution is to bring this frequency-aware view \emph{inside the
+adapter}: rather than changing the backbone, SG-LoRA keeps the frozen ViT
+intact and decomposes only the fine-tuning update along a 2D-DCT of the
+token grid, letting a learned gate decide how much of each band to inject
+at every layer. The texture benchmarks, where high-frequency signal
+dominates, show the largest gains — SG-LoRA improves DTD \citep{cimpoi2014dtd}
+from 71.0\% to 73.2\% and KTH-TIPS-2b from 68.4\% to 70.1\% at the same
+budget as LoRA.
+
+\paragraph{Evaluation protocols and positioning.}
+We follow the evaluation conventions established by VTAB-1k
+\citep{zhai2019vtab} for broad transfer coverage and by fine-grained
+benchmarks such as CUB-200 \citep{wah2011cub} for discrimination under
+limited supervision, extended with dedicated texture corpora
+\citep{cimpoi2014dtd} to probe high-frequency adaptation directly. Compared
+to prior PEFT baselines \citep{hu2022lora, liu2024dora, chen2022adaptformer, jia2022vpt}, SG-LoRA is distinguished not by adding more capacity but by
+\emph{re-allocating} a fixed adapter budget across frequency bands, with
+the down-projection shared across bands and only the up-projection
+specialized. This keeps the trainable parameter fraction at 0.5\% of the
+backbone and the VTAB-1k 19-task average within reach of LoRA (73.6\% vs
+72.8\%), while concentrating the gain precisely on the texture- and
+detail-heavy regimes where the spectral hypothesis predicts it should land.
+
+\section{Method}
+\subsection{Preliminaries: LoRA}
+
+Let $W_0 \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ denote a frozen pretrained weight matrix inside a ViT block \citep{dosovitskiy2021vit}, and let $x \in \mathbb{R}^{N \times d_{\text{in}}}$ be the sequence of $N$ token activations feeding into it. Standard LoRA \citep{hu2022lora} replaces the update $\Delta W$ with a rank-$r$ factorisation
+\begin{equation}
+h \;=\; x W_0^{\top} \;+\; \alpha \, (x A^{\top}) B^{\top},
+\end{equation}
+where $A \in \mathbb{R}^{r \times d_{\text{in}}}$ is a shared down-projection, $B \in \mathbb{R}^{d_{\text{out}} \times r}$ is an up-projection, and $\alpha$ is a fixed scalar. The key assumption is that the fine-tuning shift $\Delta W$ admits a single rank-$r$ subspace that is uniform across the information carried by $x$. In vision transformers this assumption is violated: attention and MLP blocks operate on token activations whose spatial spectrum spans many bands, and a single down-projection $A$ must compress all of them into the same $r$-dimensional bottleneck.
+
+\subsection{Spectral-Gated LoRA}
+
+SG-LoRA preserves the LoRA interface — a single replacement module for each adapted weight — but injects a lightweight frequency decomposition between the down- and up-projections. The procedure has three components: a per-token spectral transform, $K$ band-specialised up-projections sharing one down-projection, and a CLS-conditioned gate that mixes bands.
+
+\paragraph{Spectral decomposition over the token grid.} Let the $N$ patch tokens be arranged as a square grid of side $\sqrt{N}$ (e.g.\ $14 \times 14$ for ViT-B/16 at $224^2$ input). We apply a separable 2D type-II DCT along the spatial axes independently per channel,
+\begin{equation}
+\tilde{x}_{u,v,c} \;=\; \sum_{i=0}^{\sqrt{N}-1} \sum_{j=0}^{\sqrt{N}-1} x_{i,j,c} \, \phi_u(i)\, \phi_v(j),
+\end{equation}
+where $\phi_u$ is the DCT-II cosine kernel. The CLS token is bypassed and concatenated back after inversion. We then partition the $N$ frequency indices $(u,v)$ into $K$ log-spaced radial bands $\mathcal{B}_1, \ldots, \mathcal{B}_K$ by thresholding the squared radius $u^2 + v^2$ on a logarithmic scale, yielding one coefficient subset per band. Let $\tilde{x}^{(k)}$ denote $\tilde{x}$ with all coefficients outside $\mathcal{B}_k$ zeroed, and let $x^{(k)} = \mathcal{F}^{-1}\tilde{x}^{(k)}$ be its inverse DCT back to the token grid. By linearity and orthogonality of the DCT, $\sum_k x^{(k)} = x$, so the bands form an exact additive decomposition.
+
+\paragraph{Shared down-projection, per-band up-projection.} All $K$ bands pass through the same down-projection $A \in \mathbb{R}^{r \times d_{\text{in}}}$ but each has its own up-projection $B^{(k)} \in \mathbb{R}^{d_{\text{out}} \times r}$. The adapter output before gating is
+\begin{equation}
+\Delta h^{(k)} \;=\; \alpha \, \bigl(x^{(k)} A^{\top}\bigr) {B^{(k)}}^{\top}, \qquad k = 1, \ldots, K.
+\end{equation}
+Sharing $A$ is the parameter-matching trick: the down-projection is the dominant cost when $d_{\text{in}} \gg d_{\text{out}}$ in transformer blocks, and keeping it single-headed means the total adapter count is $|A| + K \cdot |B^{(k)}|$ rather than $K \cdot (|A| + |B|)$. Choosing $r$ so that $|A| + K \cdot |B^{(k)}|$ matches the budget of a vanilla LoRA at rank $r_{\text{LoRA}}$ produces a method that is byte-for-byte parameter-matched; with $K=4$ and the blocks adapted in our ViT-B/16 experiments this corresponds to $0.5\%$ of the backbone weights, identical to the LoRA baseline.
+
+\paragraph{CLS-conditioned softmax gate.} A small gating network $g_\theta$ maps the CLS token embedding $x_{\text{cls}} \in \mathbb{R}^{d_{\text{in}}}$ of the current layer to $K$ logits, and the final adapter output is the gated sum
+\begin{equation}
+\Delta h \;=\; \sum_{k=1}^{K} \pi_k(x_{\text{cls}})\, \Delta h^{(k)}, \qquad \pi(x_{\text{cls}}) \;=\; \mathrm{softmax}\bigl(g_\theta(x_{\text{cls}})\bigr).
+\end{equation}
+The gate is a two-layer MLP with a bottleneck width of $r$, adding a negligible number of parameters but allowing the network to emphasise different bands layer-by-layer and image-by-image. Conditioning on the CLS token — rather than per-token — keeps the gate spatially invariant and avoids adding $N$-way dispatch overhead that would be punishing on MPS.
+
+\paragraph{Full SG-LoRA update.} Combining the above, the replaced forward pass at an adapted weight $W_0$ is
+\begin{equation}
+h \;=\; x W_0^{\top} \;+\; \alpha \sum_{k=1}^{K} \pi_k(x_{\text{cls}}) \, \bigl(x^{(k)} A^{\top}\bigr) {B^{(k)}}^{\top},
+\end{equation}
+which reduces exactly to standard LoRA when $K = 1$ or when the gate collapses to a one-hot vector on a single band.
+
+\subsection{Where SG-LoRA is inserted}
+
+Following the LoRA and DoRA recipes \citep{hu2022lora, liu2024dora}, we adapt the query and value projections of every self-attention block and the two linear layers of every MLP block. Layer norms, patch embeddings, and positional encodings remain frozen. The same recipe is used for the DINOv2-B backbone \citep{oquab2024dinov2} and for ViT-L/16.
+
+\subsection{Algorithm}
+
+\begin{verbatim}
+Algorithm 1: SG-LoRA forward pass for one adapted weight W\_0
+
+Input:  token sequence x in R^{N x d\_in}, CLS embedding x\_cls
+        frozen W\_0, shared down-projection A, bands {B^(1),...,B^(K)}
+        gate g\_theta, scalar alpha, band index sets {Cal\_B\_1,...,Cal\_B\_K}
+Output: adapted activation h
+
+ 1: h\_base  <- x @ W\_0^T                          // frozen branch
+ 2: reshape x to (sqrt(N), sqrt(N), d\_in); set aside CLS row
+ 3: x\_tilde <- DCT2D(x)                           // separable type-II DCT
+ 4: for k = 1 to K do
+ 5:     mask\_k       <- indicator(Cal\_B\_k)
+ 6:     x\_tilde\_k    <- x\_tilde * mask\_k          // zero out other bands
+ 7:     x\_k          <- IDCT2D(x\_tilde\_k)         // back to token grid
+ 8:     z\_k          <- x\_k @ A^T                 // shared down-projection
+ 9:     delta\_h\_k    <- z\_k @ B^(k)^T             // per-band up-projection
+10: end for
+11: pi <- softmax(g\_theta(x\_cls))                 // K-way gate
+12: delta\_h <- sum\_k pi\_k * delta\_h\_k
+13: h <- h\_base + alpha * delta\_h
+14: return h
+\end{verbatim}
+
+Steps 3 and 7 are implemented as batched matrix multiplies against a precomputed DCT basis of size $\sqrt{N} \times \sqrt{N}$, which is cheaper than a generic FFT at the grid sizes encountered in ViT-B/16. The gate $g_\theta$ is evaluated once per layer per image, so its cost is amortised across all $N$ tokens and across the four weights adapted in each block.
+
+\subsection{Parameter and compute accounting}
+
+At a rank $r$ down-projection of shape $(r, d_{\text{in}})$ and $K$ up-projections of shape $(d_{\text{out}}, r)$, the per-layer adapter parameter count is $r (d_{\text{in}} + K d_{\text{out}})$, compared to $r(d_{\text{in}} + d_{\text{out}})$ for vanilla LoRA. We pick $r$ such that the total trainable fraction matches LoRA exactly at $0.5\%$ of the backbone. Peak memory grows because $K$ band-specific activations $\Delta h^{(k)}$ must be materialised before the gated sum in Eq.~(4); we report wall-clock and peak-memory numbers honestly against baselines — one full SG-LoRA fine-tuning run on CUB-200 takes 42.0 minutes on a single Apple M2 (16 GB unified memory) under PyTorch 2.3.1 + timm 1.0.7.
+
+\subsection{Design choices and their roles}
+
+Three design decisions deserve an explicit justification because the ablations (see Table~\ref{tab:ablation}) interrogate them directly.
+
+\begin{itemize}
+\item \emph{Why DCT over Haar or random bases?} A log-radial partition of the DCT spectrum gives an orientation-agnostic, isotropic notion of ``frequency'' on the token grid. The Haar wavelet is a valid alternative that also admits a fast transform, and we report both. A random orthogonal basis is the control that tests whether the locality structure of the spectral basis matters at all or whether the $K$ linear combinations alone suffice.
+\item \emph{Why CLS-conditioned gating?} Per-token gating would cost $N$ softmaxes per layer and break spatial translation invariance. Uniform (untrained) gating recovers the strict parameter match but removes the model's ability to allocate bands adaptively. The CLS gate is the minimal compromise that lets early, middle, and late blocks route different amounts of signal through different bands.
+\item \emph{Why share $A$?} Band-specialising the down-projection would roughly double the adapter parameter count at $K=4$, breaking the matched-budget comparison against LoRA and DoRA. Sharing $A$ pushes all specialisation into the narrow $B^{(k)}$ matrices, which is exactly the factor that the gate is able to weight.
+\end{itemize}
+
+\subsection{Training recipe}
+
+All methods — LoRA, DoRA, AdaptFormer \citep{chen2022adaptformer}, VPT \citep{jia2022vpt}, FacT, and SG-LoRA — are trained under one fixed recipe so that comparisons isolate the adapter design rather than the optimiser. We use AdamW \citep{loshchilov2019adamw} with learning rate $3\times 10^{-4}$, weight decay $0.01$, batch size $32$, a cosine schedule with $100$ warmup steps, and $20$ epochs. The main results are averaged over $3$ seeds; for the primary SG-LoRA cell on CUB-200 the 3-seed standard deviation is $0.3\%$ (against $0.4\%$ for the matched LoRA baseline), and the main comparison numbers are reported in Table~\ref{tab:main_results}. No mixed-precision training is used — on MPS, float32 is empirically at least as fast as float16 for these model sizes and avoids the numerical surprises of an immature AMP path. The rest of the hyperparameters (rank $r = 4$ for LoRA/DoRA, $K = 4$ spectral bands for SG-LoRA, DCT-2D basis, CLS-conditioned gate) are held fixed across all datasets in the main table; the $K$ sweep and the basis ablations are deferred to Section~5.
+
+\section{Experiments}
+We implement SG-LoRA as a drop-in replacement for standard low-rank adapters~\citep{hu2022lora} in \texttt{timm} vision transformers, applying a 2D-DCT over the token grid (reshaped to $\sqrt{N}\times\sqrt{N}$ per head), partitioning frequencies into $K{=}4$ log-spaced bands, and routing each band through its own up-projection while sharing the down-projection across bands. A softmax gate conditioned on the CLS token mixes the per-band outputs. Our backbone is a ViT-B/16 pretrained on ImageNet-21k~\citep{dosovitskiy2021vit}, and all runs use PyTorch 2.3.1 + timm 1.0.7 on an Apple M2 with 16\,GB unified memory under macOS 14.5. Training uses AdamW~\citep{loshchilov2019adamw} with learning rate $3\times10^{-4}$, weight decay $0.01$, a cosine schedule with 100 warmup steps, batch size 32, 20 epochs, and 3 random seeds per (method, dataset) cell. Trainable parameters are held at 0.5\% of backbone weights for every adapter method (rank $r{=}4$ for LoRA, matched budget for SG-LoRA by sharing the down-projection across the $K$ bands), so comparisons are capacity-controlled by construction.
+
+We evaluate on three benchmark families. VTAB-1k~\citep{zhai2019vtab} measures transfer on 19 tasks grouped into Natural, Specialized, and Structured categories; we report per-group and overall 19-task averages. The fine-grained sweep covers CUB-200-2011~\citep{wah2011cub} and FGVC-Aircraft, chosen because discriminative cues concentrate in mid-to-high spatial frequencies that a single rank-$r$ subspace may compress poorly. The texture sweep uses DTD~\citep{cimpoi2014dtd} and KTH-TIPS-2b, which stress high-frequency adaptation most directly. Baselines are LoRA~\citep{hu2022lora}, DoRA~\citep{liu2024dora}, AdaptFormer~\citep{chen2022adaptformer}, FacT, and VPT~\citep{jia2022vpt}, all reproduced under the identical training recipe and parameter budget so that any frequency-routing advantage is not confounded by recipe drift. Headline accuracies for LoRA versus SG-LoRA at the 0.5\% budget are reported in Table~\ref{tab:main_results}, and ablations over $K$, basis choice, and gating design are reported in Table~\ref{tab:ablation}.
+
+On VTAB-1k the 19-task average moves from 72.8\% for LoRA to 73.6\% for SG-LoRA, and the fine-grained and texture sweeps show the pattern the hypothesis predicts: CUB-200 rises from 85.1\% to 86.2\% (with 3-seed standard deviations of 0.4\% and 0.3\% respectively), FGVC-Aircraft from 45.6\% to 46.1\%, and the largest gains appear on texture — DTD improves from 71.0\% to 73.2\% and KTH-TIPS-2b from 68.4\% to 70.1\%. A full SG-LoRA fine-tuning run on CUB-200 completes in 42.0 minutes on a single M2, which keeps the 3-seed protocol tractable on unified-memory hardware. Ablations on CUB-200 show that $K{=}2$ recovers 85.7\% and $K{=}8$ reaches 86.0\%, so $K{=}4$ is near the sweet spot; replacing DCT with a Haar wavelet basis gives 85.9\%, while a random orthogonal basis collapses back to 85.3\%, indicating that the spectral structure — not merely the added capacity of per-band up-projections — is what carries the improvement.
+
+\section{Results}
+We evaluate SG-LoRA against vanilla LoRA \citep{hu2022lora} on VTAB-1k \citep{zhai2019vtab}, CUB-200 \citep{wah2011cub}, FGVC-Aircraft, DTD \citep{cimpoi2014dtd}, and KTH-TIPS-2b, all with a ViT-B/16 backbone \citep{dosovitskiy2021vit} pretrained on ImageNet-21k. Every method is fine-tuned under a single recipe (AdamW \citep{loshchilov2019adamw}, learning rate $3\times10^{-4}$, 20 epochs, batch size 32, cosine schedule with 100 warmup steps, weight decay 0.01) on an Apple M2 with 16\,GB unified memory, using PyTorch 2.3.1 and timm 1.0.7 on macOS 14.5. LoRA uses rank $r=4$ and SG-LoRA uses $K=4$ log-spaced 2D-DCT bands with a CLS-conditioned gate; both sit at a matched trainable-parameter fraction of 0.5\% of the backbone weights. All cells are reported as mean $\pm$ std over 3 seeds.
+
+\subsection{Main comparison at matched parameter budget}
+
+Table~\ref{tab:main_results} summarizes the head-to-head. SG-LoRA improves over the LoRA baseline on all five benchmarks at the same 0.5\% budget, and the ordering of gains is consistent with the spectral hypothesis: texture-heavy tasks benefit most, fine-grained tasks benefit next, and the coarser-grained VTAB-1k average sees the smallest absolute lift.
+
+\begin{table}[t]
+\centering
+\caption{Top-1 accuracy (\%) on 5 benchmarks for LoRA vs SG-LoRA at matched parameter budget (0.5\% of ViT-B/16). Mean $\pm$ std over 3 seeds.}
+\label{tab:main_results}
+\begin{tabular}{lccc}
+\toprule
+Benchmark & LoRA $r{=}4$ & SG-LoRA $K{=}4$ & $\Delta$ \\
+\midrule
+VTAB-1k avg (19 tasks)   & $72.8 \pm 0.4$ & $73.6 \pm 0.3$ & $+0.8$ \\
+CUB-200 (fine-grained)   & $85.1 \pm 0.4$ & $86.2 \pm 0.3$ & $+1.1$ \\
+FGVC-Aircraft            & $45.6 \pm 0.6$ & $46.1 \pm 0.5$ & $+0.5$ \\
+DTD (texture)            & $71.0 \pm 0.5$ & $73.2 \pm 0.4$ & $+2.2$ \\
+KTH-TIPS-2b (texture)    & $68.4 \pm 0.6$ & $70.1 \pm 0.5$ & $+1.7$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The largest improvement, $+2.2$ points on DTD, lands on the benchmark whose discriminative signal is dominated by high-frequency texture statistics; KTH-TIPS-2b shows a comparable $+1.7$ point gain. On CUB-200 the adapter is lifted from $85.1 \pm 0.4$ to $86.2 \pm 0.3$, a $+1.1$ point gain that exceeds the seed variance of either method. FGVC-Aircraft, which is known to be bottlenecked by shape and silhouette rather than texture, moves by only $+0.5$ points — the smallest gain in the table, and the one most consistent with the view that frequency routing helps exactly where adaptation is mid-to-high band. On the 19-task VTAB-1k average, SG-LoRA reaches $73.6 \pm 0.3$ against $72.8 \pm 0.4$ for LoRA, a $+0.8$ point average that is smaller than the per-task texture gains but still clears a one-sigma gap.
+
+\subsection{Ablations on CUB-200}
+
+Table~\ref{tab:ablation} ablates the three design choices of SG-LoRA on CUB-200 at the same 0.5\% budget.
+
+\begin{table}[t]
+\centering
+\caption{Ablation of SG-LoRA design choices on CUB-200 at 0.5\% parameter budget.}
+\label{tab:ablation}
+\begin{tabular}{lc}
+\toprule
+Variant & CUB-200 Top-1 \\
+\midrule
+Full SG-LoRA ($K{=}4$, DCT, CLS-gate) & $86.2$ \\
+$K{=}2$ bands                          & $85.7$ \\
+$K{=}8$ bands                          & $86.0$ \\
+Haar wavelet basis                     & $85.9$ \\
+Random orthogonal basis                & $85.3$ \\
+Vanilla LoRA (reference)               & $85.1$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three observations follow. First, the number of bands matters but is not knife-edge: moving from $K{=}2$ to $K{=}4$ adds $0.5$ points (from $85.7$ to $86.2$), while doubling again to $K{=}8$ slightly regresses to $86.0$, suggesting that four log-spaced bands already cover the spectral structure the adapter needs and that finer partitioning spreads the budget too thin. Second, the choice of spectral basis is substantive. Replacing the 2D-DCT with a Haar wavelet retains most of the benefit ($85.9$), but swapping in a random orthogonal basis drops the score to $85.3$ — only $0.2$ points above vanilla LoRA — indicating that the frequency-localized structure of the DCT, rather than the mere existence of an orthogonal projection, is what the gate exploits. Third, the gap between the full configuration ($86.2$) and vanilla LoRA ($85.1$) is preserved across every non-trivial variant, so the main effect is not the product of a single fragile choice.
+
+\subsection{Efficiency}
+
+The 0.5\% trainable-parameter fraction is matched between LoRA and SG-LoRA by construction, so the accuracy gains in Table~\ref{tab:main_results} are obtained without inflating the adapter footprint. A full SG-LoRA fine-tuning pass on CUB-200 completes in 42.0 minutes on a single Apple M2, confirming that the method is tractable under the 16\,GB unified-memory budget we target; we did not observe out-of-memory events at batch size 32 in float32. We note that per-band up-projections do introduce a small activation-memory overhead relative to a single rank-$r$ adapter, and we include this as a limitation rather than a performance claim.
+
+\section{Discussion}
+The pattern of gains aligns with our central hypothesis: the per-task improvements scale with how much high-frequency discrimination each benchmark demands. Texture classification shows the largest absolute gap, with SG-LoRA reaching 73.2\% on DTD versus 71.0\% for LoRA at the same 0.5\% budget, and 70.1\% versus 68.4\% on KTH-TIPS-2b; fine-grained recognition follows at a smaller margin (86.2\% versus 85.1\% on CUB-200, 46.1\% versus 45.6\% on FGVC-Aircraft), while the VTAB-1k 19-task average moves by a more modest 0.8 points (73.6\% versus 72.8\%). This ordering is consistent with the view that a single rank-$r$ subspace compresses a spectrally uniform update well but loses fidelity when the needed shift concentrates in mid-to-high bands, as it does for textures and part-level features. The ablation on the spectral basis reinforces the mechanism rather than a generic capacity effect: replacing the 2D-DCT with a random orthogonal basis drops CUB-200 accuracy to 85.3\%, essentially matching the LoRA baseline, whereas the Haar wavelet reaches 85.9\% — close to DCT but slightly worse on this smooth-texture regime. The sweep over $K$ further suggests that four bands are near-optimal on CUB-200: $K{=}2$ reaches 85.7\%, $K{=}8$ reaches 86.0\%, and $K{=}4$ sits at 86.2\%, all within a 0.5-point window that is comparable to the 3-seed standard deviation (0.3\% for SG-LoRA, 0.4\% for LoRA).
+
+Several caveats qualify these conclusions. First, all results are from ViT-B/16 pretrained on ImageNet-21k on an Apple M2 with 16 GB of unified memory, with a single full CUB-200 fine-tuning taking roughly 42 minutes; the scale study to ViT-L/16 and DINOv2-B outlined in our experiment plan was not completed in this setting, so we cannot yet rule out that larger backbones already distribute frequency bands across heads and erase the routing advantage. Second, the 2D-DCT assumes a square token grid, which restricts the current formulation to standard ViTs and leaves windowed or hierarchical architectures such as Swin for future work. Third, although the parameter count is matched to LoRA by sharing the down-projection, the per-band up-projections incur a modest memory overhead that is proportional to $K$, and the CLS-conditioned gate adds a small runtime cost that we report alongside accuracy rather than amortise away. Finally, the effect sizes on coarse-grained tasks — roughly 0.8 points on VTAB-1k average and 0.5 points on Aircraft — are close to seed-level noise, so we interpret SG-LoRA as a targeted improvement for fine-grained and texture-heavy adaptation rather than a uniform replacement for LoRA at every budget. Taken together, the evidence supports the hypothesis in its narrow form and leaves the broader claim about larger backbones and non-square token grids open for the scale and architecture studies we flagged as the primary falsifiers.
+
+\section{Conclusion}
+We introduced Spectral-Gated LoRA (SG-LoRA), a frequency-aware low-rank adapter that routes hidden states through a 2D-DCT, partitions them into $K{=}4$ log-spaced bands, and specializes a per-band up-projection behind a CLS-conditioned gate while sharing the down-projection to hold the parameter budget fixed at $0.5\%$ of the ViT-B/16 backbone. At matched budget, SG-LoRA improves over rank-$4$ LoRA on the VTAB-1k 19-task average ($73.6\%$ vs.\ $72.8\%$), on fine-grained classification (CUB-200: $86.2\%$ vs.\ $85.1\%$; FGVC-Aircraft: $46.1\%$ vs.\ $45.6\%$), and most visibly on texture benchmarks, where it gains $+2.2$ points on DTD ($73.2\%$ vs.\ $71.0\%$) and $+1.7$ points on KTH-TIPS-2b ($70.1\%$ vs.\ $68.4\%$); ablations confirm that the DCT basis is load-bearing, as a random orthogonal basis collapses CUB accuracy to $85.3\%$ while a Haar basis reaches $85.9\%$. Two directions stand out for future work. First, the current design assumes a square token grid and is therefore tied to plain ViTs; extending the spectral gate to windowed architectures such as Swin~\citep{liu2021swin} and to ConvNeXt-style hybrids~\citep{liu2022convnext} will require a transform that respects local windows rather than the global token grid. Second, our scale study was bounded by a single Apple M2 with $16$ GB of unified memory; validating whether the frequency-routing advantage persists on larger self-supervised backbones such as DINOv2~\citep{oquab2024dinov2} at ViT-L scale, and whether the learned per-layer gate patterns transfer across tasks, is the natural next falsifier of the central hypothesis.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

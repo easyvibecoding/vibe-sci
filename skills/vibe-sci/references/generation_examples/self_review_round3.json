@@ -1,0 +1,55 @@
+{
+  "Summary": "The paper proposes Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, partitions the spectrum into K log-spaced radial bands, and routes each band through its own up-projection while sharing a down-projection, with a CLS-conditioned softmax gate mixing the bands. Parameter count is matched to vanilla LoRA at 0.5% of the backbone. Empirically, the authors report gains on VTAB-1k (72.8→73.6), CUB-200 (85.1→86.2), FGVC-Aircraft (45.6→46.1), and — as predicted — the largest gains on texture benchmarks DTD (71.0→73.2) and KTH-TIPS-2b (68.4→70.1). Ablations on CUB-200 show that the DCT basis is load-bearing relative to a random orthogonal basis, and that K=4 is near-optimal.",
+  "Strengths": [
+    "Clean, falsifiable central hypothesis: the spectral-uniformity assumption implicit in LoRA should hurt most where high-frequency signal dominates, and the texture-vs-coarse-task gain ordering in the main table is consistent with that prediction.",
+    "Parameter-matching is done carefully by sharing the down-projection across bands, so the comparison against LoRA at a 0.5% budget isolates the frequency-routing effect rather than confounding it with added capacity.",
+    "The random-orthogonal-basis ablation (85.3% vs 86.2% DCT vs 85.1% LoRA) is exactly the right control to separate 'spectral structure matters' from 'more routing heads matter', and it mostly collapses back to the LoRA baseline as the hypothesis would require.",
+    "The method is a genuine drop-in replacement for LoRA with a clear algorithmic description, explicit parameter/compute accounting, and a sensible justification for CLS-conditioned (rather than per-token) gating."
+  ],
+  "Weaknesses": [
+    "The empirical scope is substantially narrower than the abstract and introduction advertise: the paper promises ViT-B/16, ViT-L/16, and DINOv2-B across VTAB-1k, five FGVC datasets, and two texture benchmarks with DoRA/AdaptFormer/FacT/VPT/full-FT baselines, but the results section only reports ViT-B/16 on five datasets against LoRA; DoRA, AdaptFormer, FacT, VPT, ViT-L/16, DINOv2-B, Cars, Flowers, and Pets are all missing. The Discussion section acknowledges this but the mismatch with the stated contributions is severe.",
+    "Effect sizes are small and likely not statistically significant for several headline claims: CUB +1.1 at σ≈0.3–0.4 over 3 seeds is marginal, Aircraft +0.5 is within noise, and the VTAB-1k +0.8 aggregate is reported without per-task seeds or a significance test. No confidence intervals, paired tests, or seed-level breakdowns are provided.",
+    "Key analyses promised in the introduction are missing from the results: the per-layer gate-entropy and per-band adapter-norm analysis that would localize 'where frequency routing helps' is announced as a contribution but never appears in Section 5 or the figures.",
+    "The core mechanism is under-examined. By linearity, (x^(k) Aᵀ) Bᵀ = x Aᵀ multiplied through band-filtered inputs — so if A is shared and the gate is a per-layer scalar over the CLS token, the method is closely related to applying K band-wise linear filters to the LoRA input followed by a mixture of output heads. The paper does not compare against obvious cheaper baselines (e.g., LoRA with K-head mixture-of-B without the DCT, or LoRA applied to DCT-filtered inputs with a single B), which would be the real tests of whether the frequency decomposition, rather than the mixture-of-experts-style up-projections, drives the gain.",
+    "Reproducibility and rigor concerns: the FacT baseline has no citation, VTAB-1k per-group numbers (Natural/Specialized/Structured) are described but not shown, there is no code or released checkpoints mentioned, and several numerical details (e.g., the exact r that matches the 0.5% budget for K=4, whether all 19 VTAB tasks also used 3 seeds) are left implicit."
+  ],
+  "Originality": 3,
+  "Quality": 2,
+  "Clarity": 3,
+  "Significance": 2,
+  "Soundness": 2,
+  "Presentation": 3,
+  "Contribution": 2,
+  "Overall": 4,
+  "Confidence": 4,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper proposes Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, partitions the spectrum into K log-spaced radial bands, and routes each band through its own up-projection while sharing a down-projection, with a CLS-conditioned softmax gate mixing the bands. Parameter count is matched to vanilla LoRA at 0.5% of the backbone. Empirically, the authors report gains on VTAB-1k (72.8→73.6), CUB-200 (85.1→86.2), FGVC-Aircraft (45.6→46.1), and — as predicted — the largest gains on texture benchmarks DTD (71.0→73.2) and KTH-TIPS-2b (68.4→70.1). Ablations on CUB-200 show that the DCT basis is load-bearing relative to a random orthogonal basis, and that K=4 is near-optimal.",
+      "Strengths": [
+        "Clean, falsifiable central hypothesis: the spectral-uniformity assumption implicit in LoRA should hurt most where high-frequency signal dominates, and the texture-vs-coarse-task gain ordering in the main table is consistent with that prediction.",
+        "Parameter-matching is done carefully by sharing the down-projection across bands, so the comparison against LoRA at a 0.5% budget isolates the frequency-routing effect rather than confounding it with added capacity.",
+        "The random-orthogonal-basis ablation (85.3% vs 86.2% DCT vs 85.1% LoRA) is exactly the right control to separate 'spectral structure matters' from 'more routing heads matter', and it mostly collapses back to the LoRA baseline as the hypothesis would require.",
+        "The method is a genuine drop-in replacement for LoRA with a clear algorithmic description, explicit parameter/compute accounting, and a sensible justification for CLS-conditioned (rather than per-token) gating."
+      ],
+      "Weaknesses": [
+        "The empirical scope is substantially narrower than the abstract and introduction advertise: the paper promises ViT-B/16, ViT-L/16, and DINOv2-B across VTAB-1k, five FGVC datasets, and two texture benchmarks with DoRA/AdaptFormer/FacT/VPT/full-FT baselines, but the results section only reports ViT-B/16 on five datasets against LoRA; DoRA, AdaptFormer, FacT, VPT, ViT-L/16, DINOv2-B, Cars, Flowers, and Pets are all missing. The Discussion section acknowledges this but the mismatch with the stated contributions is severe.",
+        "Effect sizes are small and likely not statistically significant for several headline claims: CUB +1.1 at σ≈0.3–0.4 over 3 seeds is marginal, Aircraft +0.5 is within noise, and the VTAB-1k +0.8 aggregate is reported without per-task seeds or a significance test. No confidence intervals, paired tests, or seed-level breakdowns are provided.",
+        "Key analyses promised in the introduction are missing from the results: the per-layer gate-entropy and per-band adapter-norm analysis that would localize 'where frequency routing helps' is announced as a contribution but never appears in Section 5 or the figures.",
+        "The core mechanism is under-examined. By linearity, (x^(k) Aᵀ) Bᵀ = x Aᵀ multiplied through band-filtered inputs — so if A is shared and the gate is a per-layer scalar over the CLS token, the method is closely related to applying K band-wise linear filters to the LoRA input followed by a mixture of output heads. The paper does not compare against obvious cheaper baselines (e.g., LoRA with K-head mixture-of-B without the DCT, or LoRA applied to DCT-filtered inputs with a single B), which would be the real tests of whether the frequency decomposition, rather than the mixture-of-experts-style up-projections, drives the gain.",
+        "Reproducibility and rigor concerns: the FacT baseline has no citation, VTAB-1k per-group numbers (Natural/Specialized/Structured) are described but not shown, there is no code or released checkpoints mentioned, and several numerical details (e.g., the exact r that matches the 0.5% budget for K=4, whether all 19 VTAB tasks also used 3 seeds) are left implicit."
+      ],
+      "Originality": 3,
+      "Quality": 2,
+      "Clarity": 3,
+      "Significance": 2,
+      "Soundness": 2,
+      "Presentation": 3,
+      "Contribution": 2,
+      "Overall": 4,
+      "Confidence": 4,
+      "Decision": "Reject"
+    }
+  ]
+}
