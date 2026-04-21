@@ -1,0 +1,55 @@
+{
+  "Summary": "The paper proposes Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for Vision Transformers that applies a 2D-DCT over the token grid, partitions the spectrum into K=4 log-spaced bands, and routes each band through a dedicated up-projection with a CLS-conditioned softmax gate while sharing the down-projection to match the LoRA parameter budget. The authors evaluate on VTAB-1k, CUB-200, FGVC-Aircraft, DTD, and KTH-TIPS-2b with ViT-B/16 pretrained on ImageNet-21k at a 0.5% parameter budget, reporting consistent gains over LoRA with the largest improvements on texture benchmarks (DTD +2.2, KTH-TIPS-2b +1.7). Ablations on basis choice (DCT vs. Haar vs. random orthogonal) and band count suggest that the structured frequency decomposition is responsible for the improvement rather than the extra up-projection capacity alone. The method is designed to run on a single Apple M2 with 16 GB of unified memory, with a single CUB-200 run completing in 42 minutes.",
+  "Strengths": [
+    "The spectral-uniformity critique of LoRA is well-motivated and connects cleanly to prior observations that ViT attention acts as a low-pass filter while MLPs carry higher-frequency information; framing band-specialized up-projections with a shared down-projection is a parsimonious instantiation that preserves the parameter budget.",
+    "The basis ablation (DCT 86.2 vs. Haar 85.9 vs. random orthogonal 85.3, against a LoRA reference of 85.1) is the right experiment to isolate whether the gain comes from frequency structure or generic multi-branch capacity, and the monotone degradation with loss of frequency meaning is suggestive evidence.",
+    "Matched parameter budgets, a fixed training recipe across methods, three-seed means with reported standard deviations, and honest framing of within-seed variance (e.g., the 0.5-point Aircraft gain) give the empirical claims a more defensible footing than is typical for adapter papers.",
+    "The ordering of gains (texture > fine-grained > VTAB average) is consistent with the stated hypothesis, which strengthens the mechanistic story beyond a single aggregate number."
+  ],
+  "Weaknesses": [
+    "The empirical scope severely undercuts the abstract's promise: the abstract advertises evaluations on ViT-B/16, ViT-L/16, and DINOv2-B, and comparisons against DoRA, AdaptFormer, FacT, VPT, and full fine-tuning, but the actual Results section reports only ViT-B/16 vs. a single LoRA baseline. No DoRA, AdaptFormer, FacT, VPT, or full-FT numbers appear anywhere in the tables — this is a significant mismatch between claimed and delivered evidence.",
+    "The reported gains are modest (VTAB-1k +0.8, CUB-200 +1.1, Aircraft +0.5) and at most 1–3x the reported seed standard deviation, with only three seeds per cell and no statistical test. Given that the authors themselves note Aircraft gains are within-seed-variance-plausible, several of the headline effects are not convincingly above noise.",
+    "The claim that the DCT requires a square token grid is correct but limits applicability to plain ViT; the paper does not actually demonstrate the method on Swin, hierarchical, or windowed attention models, even though these are the dominant modern ViT variants. The 'drop-in' framing is therefore overstated.",
+    "Key practical costs are not reported: no wall-clock comparison against LoRA at parity, no peak-memory numbers, and no FLOP accounting for the K-fold up-projection and DCT overhead despite the paper emphasizing deployment on a memory-constrained M2. The O(N√N) FLOP claim for DCT is also incorrect for a standard 2D type-II DCT implemented as two 1D matmuls (that is O(N·√N·d) or O(N²) depending on implementation; 'O(N√N)' as written is dimensionally ambiguous).",
+    "Minor but telling polish issues: a dangling '\\ref{}' in the design-rationale section, a bare 'Standard LoRA~' citation missing its key, the Related Work omits explicit LoRA/DoRA citations, and the abstract hedges with 'We expect SG-LoRA to...' phrasing that reads as if written before the experiments were finalized. These undermine confidence in the rigor of the submission."
+  ],
+  "Originality": 2,
+  "Quality": 2,
+  "Clarity": 3,
+  "Significance": 2,
+  "Soundness": 2,
+  "Presentation": 2,
+  "Contribution": 2,
+  "Overall": 4,
+  "Confidence": 4,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper proposes Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for Vision Transformers that applies a 2D-DCT over the token grid, partitions the spectrum into K=4 log-spaced bands, and routes each band through a dedicated up-projection with a CLS-conditioned softmax gate while sharing the down-projection to match the LoRA parameter budget. The authors evaluate on VTAB-1k, CUB-200, FGVC-Aircraft, DTD, and KTH-TIPS-2b with ViT-B/16 pretrained on ImageNet-21k at a 0.5% parameter budget, reporting consistent gains over LoRA with the largest improvements on texture benchmarks (DTD +2.2, KTH-TIPS-2b +1.7). Ablations on basis choice (DCT vs. Haar vs. random orthogonal) and band count suggest that the structured frequency decomposition is responsible for the improvement rather than the extra up-projection capacity alone. The method is designed to run on a single Apple M2 with 16 GB of unified memory, with a single CUB-200 run completing in 42 minutes.",
+      "Strengths": [
+        "The spectral-uniformity critique of LoRA is well-motivated and connects cleanly to prior observations that ViT attention acts as a low-pass filter while MLPs carry higher-frequency information; framing band-specialized up-projections with a shared down-projection is a parsimonious instantiation that preserves the parameter budget.",
+        "The basis ablation (DCT 86.2 vs. Haar 85.9 vs. random orthogonal 85.3, against a LoRA reference of 85.1) is the right experiment to isolate whether the gain comes from frequency structure or generic multi-branch capacity, and the monotone degradation with loss of frequency meaning is suggestive evidence.",
+        "Matched parameter budgets, a fixed training recipe across methods, three-seed means with reported standard deviations, and honest framing of within-seed variance (e.g., the 0.5-point Aircraft gain) give the empirical claims a more defensible footing than is typical for adapter papers.",
+        "The ordering of gains (texture > fine-grained > VTAB average) is consistent with the stated hypothesis, which strengthens the mechanistic story beyond a single aggregate number."
+      ],
+      "Weaknesses": [
+        "The empirical scope severely undercuts the abstract's promise: the abstract advertises evaluations on ViT-B/16, ViT-L/16, and DINOv2-B, and comparisons against DoRA, AdaptFormer, FacT, VPT, and full fine-tuning, but the actual Results section reports only ViT-B/16 vs. a single LoRA baseline. No DoRA, AdaptFormer, FacT, VPT, or full-FT numbers appear anywhere in the tables — this is a significant mismatch between claimed and delivered evidence.",
+        "The reported gains are modest (VTAB-1k +0.8, CUB-200 +1.1, Aircraft +0.5) and at most 1–3x the reported seed standard deviation, with only three seeds per cell and no statistical test. Given that the authors themselves note Aircraft gains are within-seed-variance-plausible, several of the headline effects are not convincingly above noise.",
+        "The claim that the DCT requires a square token grid is correct but limits applicability to plain ViT; the paper does not actually demonstrate the method on Swin, hierarchical, or windowed attention models, even though these are the dominant modern ViT variants. The 'drop-in' framing is therefore overstated.",
+        "Key practical costs are not reported: no wall-clock comparison against LoRA at parity, no peak-memory numbers, and no FLOP accounting for the K-fold up-projection and DCT overhead despite the paper emphasizing deployment on a memory-constrained M2. The O(N√N) FLOP claim for DCT is also incorrect for a standard 2D type-II DCT implemented as two 1D matmuls (that is O(N·√N·d) or O(N²) depending on implementation; 'O(N√N)' as written is dimensionally ambiguous).",
+        "Minor but telling polish issues: a dangling '\\ref{}' in the design-rationale section, a bare 'Standard LoRA~' citation missing its key, the Related Work omits explicit LoRA/DoRA citations, and the abstract hedges with 'We expect SG-LoRA to...' phrasing that reads as if written before the experiments were finalized. These undermine confidence in the rigor of the submission."
+      ],
+      "Originality": 2,
+      "Quality": 2,
+      "Clarity": 3,
+      "Significance": 2,
+      "Soundness": 2,
+      "Presentation": 2,
+      "Contribution": 2,
+      "Overall": 4,
+      "Confidence": 4,
+      "Decision": "Reject"
+    }
+  ]
+}

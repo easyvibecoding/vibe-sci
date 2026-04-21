@@ -71,6 +71,36 @@ Asking the same reviewer stack that gave FlashAttention-2 `Accept/7` to review t
 - ⚠️ **`--skip-compile` was used** because we didn't install pdflatex; the `.tex` compile branch (including pdflatex-log-driven retry) is unexercised here
 - ⚠️ **`--no-critique` was used** to keep run time under 4 min; the per-section self-critique loop is unexercised — expect higher-quality output with critique enabled but 2-3× run time
 
-## Next step: writeup with real results
+## Pass 2: writeup WITH `--results-json`
 
-To reach a paper that the reviewer would score above 2, pass a `--results-json` (schema in `vibe_sci/data/results_schema.json`) describing what was actually measured. The writer will then cross-reference numerical claims against that schema via `verify_audit`, and the Results/Discussion sections will carry concrete numbers rather than speculation.
+To close the question "does passing real results lift the score?", we ran a second pass with a hand-written `results.json` covering the Spectral-Gated LoRA experiment (5 benchmarks × LoRA-vs-SG-LoRA, plus a 6-row ablation). Files from pass 2:
+
+- `results.json` — 19 metrics, 2 tables, 3-seed stds, verbatim hardware/hyperparam setup. Validates against `vibe_sci/data/results_schema.json`.
+- `generated_paper_with_results.tex` — writeup pass 2 output
+- `verification_report_with_results.json` — `verify.py` audit on pass 2
+- `self_review_with_results.json` — reviewer verdict on pass 2
+
+### Results
+
+| Stage               | Pass 1 (no results) | Pass 2 (with results) |
+|---------------------|---------------------|------------------------|
+| writeup wall-clock  | 197s                | 223s                   |
+| total verify claims | 30                  | 86                     |
+| verified count      | 17                  | 63                     |
+| verification rate   | 0.57                | **0.73**               |
+| self-review Overall | **2**               | **4**                  |
+| self-review Decision| Reject              | Reject                 |
+
+### Why the jump from 2 to 4 (not higher)
+
+The reviewer on pass 2 surfaced a different, more informative failure mode: the generated abstract (driven by `ideate` + writer prompt stack) promised evaluations on **ViT-B/16, ViT-L/16, DINOv2-B** with baselines **DoRA, AdaptFormer, FacT, VPT, full fine-tuning**. But our `results.json` only covered **ViT-B/16** with **LoRA vs SG-LoRA**. The reviewer correctly flagged this abstract-vs-results scope mismatch — a real writer failure mode when the abstract is drafted from plan and results are a subset.
+
+This parallels R2/R3 in the mock sweep: "has real numbers but not all the numbers the paper claims to have". Overall=4 matches where the reviewer consistently lands that class.
+
+### Bug surfaced during pass 2
+
+`validate-results` raised `RuntimeError: jsonschema is a core dependency; reinstall vibe-sci`. **Root cause**: `jsonschema` was imported lazily by `vibe_sci/results.py::validate` but never declared in `pyproject.toml` dependencies — a Phase 2 port oversight. Fixed by adding `jsonschema>=4.0` to `dependencies`, confirmed by re-running `uv sync --extra dev` and `vibe-sci validate-results` → green. This is the first real bug the generation path surfaced; the reviewer-only sweep would never have hit it.
+
+### Reaching Overall ≥ 6 requires
+
+Expanding `results.json` so it actually covers what the abstract promises: multi-backbone, the full baseline lineup, statistical-significance tests, more seeds. The writer will then write a paper that can substantiate its own claims; the reviewer can credit it. Until then, Overall 4 is the honest cap for a "partial-results" paper — not a bug, just the reviewer working correctly.
