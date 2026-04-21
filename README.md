@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="180" alt="vibe-sci logo — an academic paper being written by a quill whose ink trails off into a neural network"/>
+</p>
+
 # vibe-sci
 
 Provider-neutral autonomous ML research paper writer — **ideation → LaTeX writeup → peer review → anti-hallucination numerical audit**.
