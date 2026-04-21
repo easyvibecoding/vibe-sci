@@ -1,0 +1,55 @@
+{
+  "Summary": "The paper introduces Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, splits hidden states into K log-spaced frequency bands, and routes each band through its own up-projection under a CLS-conditioned softmax gate. The down-projection is shared across bands to keep the trainable parameter count matched to standard LoRA. Experiments on VTAB-1k, five FGVC benchmarks, and two texture datasets (DTD, KTH-TIPS-2b) across ViT-B/16, ViT-L/16, and DINOv2-B claim consistent gains, with the largest effects (up to +2.2 points on DTD) on texture-heavy tasks. Ablations over band count, basis choice (DCT vs Haar vs random orthogonal), gate conditioning, and projection sharing attempt to localize the source of the improvement.",
+  "Strengths": [
+    "Clear and well-motivated hypothesis: the spectral-uniformity assumption of LoRA is articulated sharply, and the method is tightly tied to that diagnosis rather than being an arbitrary architectural tweak.",
+    "Matched-parameter protocol is handled carefully — sharing the down-projection to equalize budget against LoRA, and explicitly flagging the per-band down-projection variant as out-of-protocol is a good methodological practice.",
+    "The ablation over spectral basis (DCT vs Haar vs random orthogonal) is the right experiment to isolate whether the gain comes from structured frequency routing or from raw capacity, and it tells a coherent story.",
+    "Scope, limitations, and memory/compute overheads (8% memory, square-grid assumption, non-equivariance to rotary/positional encodings, narrowing gains at larger scale) are reported transparently rather than hidden."
+  ],
+  "Weaknesses": [
+    "Effect sizes on many tasks are within or barely above plausible seed noise (e.g., Flowers +0.1, Pets +0.1, Aircraft +0.2, Cars +0.2, DINOv2 VTAB +0.4, CUB +0.3 at L/16), yet the paper leans on them; only one paired t-test on DTD (p=0.003) is reported — significance testing on the marginal wins is missing.",
+    "The scale study partially undermines the core claim: the VTAB and fine-grained advantages shrink substantially on ViT-L and DINOv2-B, leaving DTD/KTH-TIPS-2b as the only robust wins, which reduces SG-LoRA's positioning from a general LoRA replacement to a niche tool — a framing the paper acknowledges but does not fully internalize in headline claims.",
+    "Several baselines (AdaptFormer, FacT, VPT) are only reproduced on a subset of benchmarks, with many '---' cells on fine-grained and KTH-TIPS-2b, weakening the claim of dominance 'on eight benchmarks' made in the contributions list.",
+    "Analytical depth is limited: the paper promises per-layer gate entropy and per-band L2 analysis to localize the adaptation signal, but no figure or table of these diagnostics is actually presented, so the mechanistic interpretation of which bands/layers matter is asserted rather than shown.",
+    "Reproducibility details are thin — no code release statement, the DCT/IDCT construction on non-perfect-square token counts (e.g., with a CLS token and register tokens) is under-specified, and the FacT baseline is cited without a reference entry."
+  ],
+  "Originality": 3,
+  "Quality": 2,
+  "Clarity": 3,
+  "Significance": 2,
+  "Soundness": 2,
+  "Presentation": 3,
+  "Contribution": 2,
+  "Overall": 5,
+  "Confidence": 4,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper introduces Spectral-Gated LoRA (SG-LoRA), a parameter-efficient fine-tuning method for vision transformers that applies a 2D-DCT over the token grid, splits hidden states into K log-spaced frequency bands, and routes each band through its own up-projection under a CLS-conditioned softmax gate. The down-projection is shared across bands to keep the trainable parameter count matched to standard LoRA. Experiments on VTAB-1k, five FGVC benchmarks, and two texture datasets (DTD, KTH-TIPS-2b) across ViT-B/16, ViT-L/16, and DINOv2-B claim consistent gains, with the largest effects (up to +2.2 points on DTD) on texture-heavy tasks. Ablations over band count, basis choice (DCT vs Haar vs random orthogonal), gate conditioning, and projection sharing attempt to localize the source of the improvement.",
+      "Strengths": [
+        "Clear and well-motivated hypothesis: the spectral-uniformity assumption of LoRA is articulated sharply, and the method is tightly tied to that diagnosis rather than being an arbitrary architectural tweak.",
+        "Matched-parameter protocol is handled carefully — sharing the down-projection to equalize budget against LoRA, and explicitly flagging the per-band down-projection variant as out-of-protocol is a good methodological practice.",
+        "The ablation over spectral basis (DCT vs Haar vs random orthogonal) is the right experiment to isolate whether the gain comes from structured frequency routing or from raw capacity, and it tells a coherent story.",
+        "Scope, limitations, and memory/compute overheads (8% memory, square-grid assumption, non-equivariance to rotary/positional encodings, narrowing gains at larger scale) are reported transparently rather than hidden."
+      ],
+      "Weaknesses": [
+        "Effect sizes on many tasks are within or barely above plausible seed noise (e.g., Flowers +0.1, Pets +0.1, Aircraft +0.2, Cars +0.2, DINOv2 VTAB +0.4, CUB +0.3 at L/16), yet the paper leans on them; only one paired t-test on DTD (p=0.003) is reported — significance testing on the marginal wins is missing.",
+        "The scale study partially undermines the core claim: the VTAB and fine-grained advantages shrink substantially on ViT-L and DINOv2-B, leaving DTD/KTH-TIPS-2b as the only robust wins, which reduces SG-LoRA's positioning from a general LoRA replacement to a niche tool — a framing the paper acknowledges but does not fully internalize in headline claims.",
+        "Several baselines (AdaptFormer, FacT, VPT) are only reproduced on a subset of benchmarks, with many '---' cells on fine-grained and KTH-TIPS-2b, weakening the claim of dominance 'on eight benchmarks' made in the contributions list.",
+        "Analytical depth is limited: the paper promises per-layer gate entropy and per-band L2 analysis to localize the adaptation signal, but no figure or table of these diagnostics is actually presented, so the mechanistic interpretation of which bands/layers matter is asserted rather than shown.",
+        "Reproducibility details are thin — no code release statement, the DCT/IDCT construction on non-perfect-square token counts (e.g., with a CLS token and register tokens) is under-specified, and the FacT baseline is cited without a reference entry."
+      ],
+      "Originality": 3,
+      "Quality": 2,
+      "Clarity": 3,
+      "Significance": 2,
+      "Soundness": 2,
+      "Presentation": 3,
+      "Contribution": 2,
+      "Overall": 5,
+      "Confidence": 4,
+      "Decision": "Reject"
+    }
+  ]
+}

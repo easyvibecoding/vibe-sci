@@ -1,0 +1,1445 @@
+{
+  "total_claims": 205,
+  "verified_count": 181,
+  "unverified_count": 24,
+  "verification_rate": 0.883,
+  "verified": [
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "parameter budget of 0.5\\% of backbone weights"
+    },
+    {
+      "raw": "20",
+      "value": 20.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "3\\times10^{-4}$ for 20 epochs with batch si"
+    },
+    {
+      "raw": "32",
+      "value": 32.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "chs with batch size 32.  \\subsection{Main"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "comparison on ViT-B/16}  Table~\\ref{tab:vi"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "ing. On the VTAB-1k 19-task average, SG-Lo"
+    },
+    {
+      "raw": "73.6%",
+      "value": 73.6,
+      "percent": true,
+      "section": "results",
+      "snippet": "ge, SG-LoRA reaches 73.6\\%, ahead of DoRA (73."
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "results",
+      "snippet": "6\\%, ahead of DoRA (73.2\\%), AdaptFormer (73.0"
+    },
+    {
+      "raw": "73.0%",
+      "value": 73.0,
+      "percent": true,
+      "section": "results",
+      "snippet": ".2\\%), AdaptFormer (73.0\\%), FacT (72.9\\%), Lo"
+    },
+    {
+      "raw": "72.9%",
+      "value": 72.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "mer (73.0\\%), FacT (72.9\\%), LoRA (72.8\\%), an"
+    },
+    {
+      "raw": "72.8%",
+      "value": 72.8,
+      "percent": true,
+      "section": "results",
+      "snippet": "acT (72.9\\%), LoRA (72.8\\%), and VPT (72.4\\%),"
+    },
+    {
+      "raw": "72.4%",
+      "value": 72.4,
+      "percent": true,
+      "section": "results",
+      "snippet": "(72.8\\%), and VPT (72.4\\%), and within 0.3 po"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "results",
+      "snippet": "72.4\\%), and within 0.3 points of the 73.9\\%"
+    },
+    {
+      "raw": "73.9%",
+      "value": 73.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "n 0.3 points of the 73.9\\% full fine-tuning re"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "while training only 0.5\\% of the backbone wei"
+    },
+    {
+      "raw": "86.2%",
+      "value": 86.2,
+      "percent": true,
+      "section": "results",
+      "snippet": "an DoRA everywhere: 86.2\\% vs.\\ 85.9\\% on CUB-"
+    },
+    {
+      "raw": "85.9%",
+      "value": 85.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "ywhere: 86.2\\% vs.\\ 85.9\\% on CUB-200, 46.1\\%"
+    },
+    {
+      "raw": "46.1%",
+      "value": 46.1,
+      "percent": true,
+      "section": "results",
+      "snippet": "85.9\\% on CUB-200, 46.1\\% vs.\\ 45.9\\% on FGVC"
+    },
+    {
+      "raw": "45.9%",
+      "value": 45.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "UB-200, 46.1\\% vs.\\ 45.9\\% on FGVC-Aircraft, 8"
+    },
+    {
+      "raw": "82.9%",
+      "value": 82.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "% on FGVC-Aircraft, 82.9\\% vs.\\ 82.7\\% on Stan"
+    },
+    {
+      "raw": "82.7%",
+      "value": 82.7,
+      "percent": true,
+      "section": "results",
+      "snippet": "rcraft, 82.9\\% vs.\\ 82.7\\% on Stanford Cars, 9"
+    },
+    {
+      "raw": "98.7%",
+      "value": 98.7,
+      "percent": true,
+      "section": "results",
+      "snippet": "% on Stanford Cars, 98.7\\% vs.\\ 98.6\\% on Oxfo"
+    },
+    {
+      "raw": "98.6%",
+      "value": 98.6,
+      "percent": true,
+      "section": "results",
+      "snippet": "d Cars, 98.7\\% vs.\\ 98.6\\% on Oxford Flowers-1"
+    },
+    {
+      "raw": "92.4%",
+      "value": 92.4,
+      "percent": true,
+      "section": "results",
+      "snippet": "rd Flowers-102, and 92.4\\% vs.\\ 92.3\\% on Oxfo"
+    },
+    {
+      "raw": "92.3%",
+      "value": 92.3,
+      "percent": true,
+      "section": "results",
+      "snippet": "02, and 92.4\\% vs.\\ 92.3\\% on Oxford Pets. Flo"
+    },
+    {
+      "raw": "0.1",
+      "value": 0.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "the margin there (+0.1) should not be over"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "results",
+      "snippet": "ad; on CUB-200 the +0.3 over DoRA correspond"
+    },
+    {
+      "raw": "1.1",
+      "value": 1.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "A corresponds to a +1.1 gap over LoRA, with"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "results",
+      "snippet": "ndard deviations of 0.3 and 0.4 respectively"
+    },
+    {
+      "raw": "0.4",
+      "value": 0.4,
+      "percent": false,
+      "section": "results",
+      "snippet": "viations of 0.3 and 0.4 respectively over 3"
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "results",
+      "snippet": "TD, SG-LoRA reaches 73.2\\%, exceeding DoRA (71"
+    },
+    {
+      "raw": "71.8%",
+      "value": 71.8,
+      "percent": true,
+      "section": "results",
+      "snippet": "\\%, exceeding DoRA (71.8\\%) by 1.4 points, Ada"
+    },
+    {
+      "raw": "71.6%",
+      "value": 71.6,
+      "percent": true,
+      "section": "results",
+      "snippet": "oints, AdaptFormer (71.6\\%) by 1.6, FacT (71.3"
+    },
+    {
+      "raw": "1.6",
+      "value": 1.6,
+      "percent": false,
+      "section": "results",
+      "snippet": "tFormer (71.6\\%) by 1.6, FacT (71.3\\%) by 1"
+    },
+    {
+      "raw": "71.3%",
+      "value": 71.3,
+      "percent": true,
+      "section": "results",
+      "snippet": ".6\\%) by 1.6, FacT (71.3\\%) by 1.9, LoRA (71.0"
+    },
+    {
+      "raw": "71.0%",
+      "value": 71.0,
+      "percent": true,
+      "section": "results",
+      "snippet": ".3\\%) by 1.9, LoRA (71.0\\%) by 2.2, and VPT (7"
+    },
+    {
+      "raw": "2.2",
+      "value": 2.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "9, LoRA (71.0\\%) by 2.2, and VPT (70.5\\%) b"
+    },
+    {
+      "raw": "70.5%",
+      "value": 70.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "%) by 2.2, and VPT (70.5\\%) by 2.7; it also cl"
+    },
+    {
+      "raw": "72.4%",
+      "value": 72.4,
+      "percent": true,
+      "section": "results",
+      "snippet": "tuning reference of 72.4\\%. On KTH-TIPS-2b, SG"
+    },
+    {
+      "raw": "70.1%",
+      "value": 70.1,
+      "percent": true,
+      "section": "results",
+      "snippet": "-2b, SG-LoRA scores 70.1\\% against 69.0\\% for"
+    },
+    {
+      "raw": "69.0%",
+      "value": 69.0,
+      "percent": true,
+      "section": "results",
+      "snippet": "ores 70.1\\% against 69.0\\% for DoRA and 68.4\\%"
+    },
+    {
+      "raw": "68.4%",
+      "value": 68.4,
+      "percent": true,
+      "section": "results",
+      "snippet": "69.0\\% for DoRA and 68.4\\% for LoRA, a +1.1 an"
+    },
+    {
+      "raw": "1.1",
+      "value": 1.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "68.4\\% for LoRA, a +1.1 and +1.7 gap respect"
+    },
+    {
+      "raw": "1.7",
+      "value": 1.7,
+      "percent": false,
+      "section": "results",
+      "snippet": "r LoRA, a +1.1 and +1.7 gap respectively. A"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "FT methods on ViT-B/16 at a matched 0.5\\% p"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "T-B/16 at a matched 0.5\\% parameter budget. S"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "s moving from ViT-B/16 (72.8 $\\to$ 73.6) to"
+    },
+    {
+      "raw": "72.8",
+      "value": 72.8,
+      "percent": false,
+      "section": "results",
+      "snippet": "ving from ViT-B/16 (72.8 $\\to$ 73.6) to ViT-L/16 (7"
+    },
+    {
+      "raw": "73.6",
+      "value": 73.6,
+      "percent": false,
+      "section": "results",
+      "snippet": "iT-B/16 (72.8 $\\to$ 73.6) to ViT-L/16 (75.3"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "\\to$ 73.6) to ViT-L/16 (75.3 $\\to$ 76.1), w"
+    },
+    {
+      "raw": "75.3",
+      "value": 75.3,
+      "percent": false,
+      "section": "results",
+      "snippet": "73.6) to ViT-L/16 (75.3 $\\to$ 76.1), while on CUB-"
+    },
+    {
+      "raw": "76.1",
+      "value": 76.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "iT-L/16 (75.3 $\\to$ 76.1), while on CUB-200"
+    },
+    {
+      "raw": "85.1",
+      "value": 85.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "arrows from $+1.1$ (85.1 $\\to$ 86.2) to $+0.7$ (87."
+    },
+    {
+      "raw": "86.2",
+      "value": 86.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "$+1.1$ (85.1 $\\to$ 86.2) to $+0.7$ (87.8 $\\"
+    },
+    {
+      "raw": "87.8",
+      "value": 87.8,
+      "percent": false,
+      "section": "results",
+      "snippet": "o$ 86.2) to $+0.7$ (87.8 $\\to$ 88.5). The texture a"
+    },
+    {
+      "raw": "88.5",
+      "value": 88.5,
+      "percent": false,
+      "section": "results",
+      "snippet": "$+0.7$ (87.8 $\\to$ 88.5). The texture advan"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": ".2$ points at ViT-B/16 (71.0 $\\to$ 73.2) an"
+    },
+    {
+      "raw": "71.0",
+      "value": 71.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "points at ViT-B/16 (71.0 $\\to$ 73.2) and by $+1.7$"
+    },
+    {
+      "raw": "73.2",
+      "value": 73.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "iT-B/16 (71.0 $\\to$ 73.2) and by $+1.7$ at V"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "by $+1.7$ at ViT-L/16 (73.1 $\\to$ 74.8). O"
+    },
+    {
+      "raw": "73.1",
+      "value": 73.1,
+      "percent": false,
+      "section": "results",
+      "snippet": "$+1.7$ at ViT-L/16 (73.1 $\\to$ 74.8). On the self-s"
+    },
+    {
+      "raw": "74.8",
+      "value": 74.8,
+      "percent": false,
+      "section": "results",
+      "snippet": "iT-L/16 (73.1 $\\to$ 74.8). On the self-super"
+    },
+    {
+      "raw": "78.6",
+      "value": 78.6,
+      "percent": false,
+      "section": "results",
+      "snippet": "$+0.4$ on VTAB-1k (78.6 $\\to$ 79.0) and $+0.3$ on"
+    },
+    {
+      "raw": "79.0",
+      "value": 79.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "VTAB-1k (78.6 $\\to$ 79.0) and $+0.3$ on CUB-"
+    },
+    {
+      "raw": "89.2",
+      "value": 89.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "$+0.3$ on CUB-200 (89.2 $\\to$ 89.5). The narrowing"
+    },
+    {
+      "raw": "89.5",
+      "value": 89.5,
+      "percent": false,
+      "section": "results",
+      "snippet": "CUB-200 (89.2 $\\to$ 89.5). The narrowing on"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "y (\\%) at a matched 0.5\\% parameter budget, 3"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "-200 at the matched 0.5\\% budget. Reducing th"
+    },
+    {
+      "raw": "86.2%",
+      "value": 86.2,
+      "percent": true,
+      "section": "results",
+      "snippet": "drops accuracy from 86.2\\% to 85.7\\%, while do"
+    },
+    {
+      "raw": "85.7%",
+      "value": 85.7,
+      "percent": true,
+      "section": "results",
+      "snippet": "racy from 86.2\\% to 85.7\\%, while doubling to"
+    },
+    {
+      "raw": "86.0%",
+      "value": 86.0,
+      "percent": true,
+      "section": "results",
+      "snippet": "ling to $K=8$ gives 86.0\\%, indicating that $K"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "results",
+      "snippet": "wavelet basis costs 0.3 points (85.9\\%), and"
+    },
+    {
+      "raw": "85.9%",
+      "value": 85.9,
+      "percent": true,
+      "section": "results",
+      "snippet": "s costs 0.3 points (85.9\\%), and replacing it"
+    },
+    {
+      "raw": "0.9",
+      "value": 0.9,
+      "percent": false,
+      "section": "results",
+      "snippet": "hogonal basis costs 0.9 points (85.3\\%) ---"
+    },
+    {
+      "raw": "85.3%",
+      "value": 85.3,
+      "percent": true,
+      "section": "results",
+      "snippet": "s costs 0.9 points (85.3\\%) --- only 0.2 point"
+    },
+    {
+      "raw": "0.2",
+      "value": 0.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "s (85.3\\%) --- only 0.2 points above the 85."
+    },
+    {
+      "raw": "85.1%",
+      "value": 85.1,
+      "percent": true,
+      "section": "results",
+      "snippet": ".2 points above the 85.1\\% LoRA reference. Thi"
+    },
+    {
+      "raw": "86.0%",
+      "value": 86.0,
+      "percent": true,
+      "section": "results",
+      "snippet": "he CLS token yields 86.0\\% (vs.\\ 86.2\\% for CL"
+    },
+    {
+      "raw": "86.2%",
+      "value": 86.2,
+      "percent": true,
+      "section": "results",
+      "snippet": "yields 86.0\\% (vs.\\ 86.2\\% for CLS), suggestin"
+    },
+    {
+      "raw": "85.4%",
+      "value": 85.4,
+      "percent": true,
+      "section": "results",
+      "snippet": "t comparison, gives 85.4\\% --- worse than the"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "results",
+      "snippet": "UB-200 at a matched 0.5\\% parameter budget (e"
+    },
+    {
+      "raw": "42.0",
+      "value": 42.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "ne on CUB-200 takes 42.0 minutes on a single"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "le M2, and the full 19-task VTAB-1k sweep"
+    },
+    {
+      "raw": "11.5",
+      "value": 11.5,
+      "percent": false,
+      "section": "results",
+      "snippet": "VTAB-1k sweep takes 11.5 hours on the M2 plus"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "used for the ViT-L/16 and DINOv2-B runs. P"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "eak memory on ViT-B/16 / CUB-200 at batch 3"
+    },
+    {
+      "raw": "32",
+      "value": 32.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "/ CUB-200 at batch 32 is 7.8\\,GB for SG-Lo"
+    },
+    {
+      "raw": "7.8",
+      "value": 7.8,
+      "percent": false,
+      "section": "results",
+      "snippet": "-200 at batch 32 is 7.8\\,GB for SG-LoRA ver"
+    },
+    {
+      "raw": "7.2",
+      "value": 7.2,
+      "percent": false,
+      "section": "results",
+      "snippet": "for SG-LoRA versus 7.2\\,GB for LoRA, rough"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "rained gap at ViT-L/16, is the context in"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "iT backbones: ViT-B/16 and ViT-L/16 pre-tra"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ViT-B/16 and ViT-L/16 pre-trained on Image"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ite covers VTAB-1k (19 tasks)~\\citep{zhai20"
+    },
+    {
+      "raw": "2011",
+      "value": 2011.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "datasets — CUB-200-2011~\\citep{wah2011cub},"
+    },
+    {
+      "raw": "0.5",
+      "value": 0.5,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "eviations are under 0.5 percentage points fo"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ls we re-ran (e.g.\\ 0.3 on CUB for SG-LoRA,"
+    },
+    {
+      "raw": "0.4",
+      "value": 0.4,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "on CUB for SG-LoRA, 0.4 on CUB for LoRA, 0.4"
+    },
+    {
+      "raw": "0.4",
+      "value": 0.4,
+      "percent": false,
+      "section": "experiments",
+      "snippet": ".4 on CUB for LoRA, 0.4 on DTD for SG-LoRA)."
+    },
+    {
+      "raw": "100",
+      "value": 100.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "eight decay $0.01$, 100 warmup steps, cosine"
+    },
+    {
+      "raw": "20",
+      "value": 20.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "s, cosine schedule, 20 epochs, batch size 3"
+    },
+    {
+      "raw": "32",
+      "value": 32.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "epochs, batch size 32, and a trainable-pa"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "ter budget fixed at 0.5\\% of backbone weights"
+    },
+    {
+      "raw": "0.2%",
+      "value": 0.2,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "dditional sweeps at 0.2\\% and 1.0\\% on VTAB-1"
+    },
+    {
+      "raw": "1.0%",
+      "value": 1.0,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "sweeps at 0.2\\% and 1.0\\% on VTAB-1k).  SG-Lo"
+    },
+    {
+      "raw": "2.3",
+      "value": 2.3,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ation is in PyTorch 2.3.1 with timm 1.0.7 a"
+    },
+    {
+      "raw": "1.0",
+      "value": 1.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "rch 2.3.1 with timm 1.0.7 and peft 0.11.0."
+    },
+    {
+      "raw": "0.11",
+      "value": 0.11,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "timm 1.0.7 and peft 0.11.0. The M2/A100 spli"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "y memory: all ViT-B/16 runs execute on an A"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "on an Apple M2 with 16~GB unified memory u"
+    },
+    {
+      "raw": "14.5",
+      "value": 14.5,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "memory under macOS 14.5, while ViT-L/16 and"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "S 14.5, while ViT-L/16 and DINOv2-B scale-s"
+    },
+    {
+      "raw": "80",
+      "value": 80.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "s use 1$\\times$A100 80GB on an Ubuntu 22.0"
+    },
+    {
+      "raw": "22.04",
+      "value": 22.04,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "0 80GB on an Ubuntu 22.04 cluster; peak memory"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "or SG-LoRA on ViT-B/16 CUB-200 at batch 32"
+    },
+    {
+      "raw": "32",
+      "value": 32.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "16 CUB-200 at batch 32 is 7.8~GB, versus 7."
+    },
+    {
+      "raw": "7.8",
+      "value": 7.8,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "-200 at batch 32 is 7.8~GB, versus 7.2~GB f"
+    },
+    {
+      "raw": "7.2",
+      "value": 7.2,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "2 is 7.8~GB, versus 7.2~GB for LoRA — an 8\\"
+    },
+    {
+      "raw": "42.0",
+      "value": 42.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "UB-200 completes in 42.0~minutes on the M2,"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "he M2, and the full 19-task VTAB-1k sweep"
+    },
+    {
+      "raw": "11.5",
+      "value": 11.5,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ll methods consumes 11.5~hours of combined M"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "section: the ViT-B/16 main comparison on V"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "cale study on ViT-L/16 and DINOv2-B (Table~"
+    },
+    {
+      "raw": "73.9%",
+      "value": 73.9,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "fine-tuning (e.g.\\ 73.9\\% on VTAB-1k and 86.8"
+    },
+    {
+      "raw": "86.8%",
+      "value": 86.8,
+      "percent": true,
+      "section": "experiments",
+      "snippet": ".9\\% on VTAB-1k and 86.8\\% on CUB-200 with ViT"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "CUB-200 with ViT-B/16) serves as an upper"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "experiments",
+      "snippet": "parameters than the 0.5\\% budget."
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "ere SG-LoRA reaches 73.2\\% on DTD versus 71.8\\"
+    },
+    {
+      "raw": "71.8%",
+      "value": 71.8,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "3.2\\% on DTD versus 71.8\\% for DoRA and 71.0\\%"
+    },
+    {
+      "raw": "71.0%",
+      "value": 71.0,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "71.8\\% for DoRA and 71.0\\% for LoRA, and 70.1\\"
+    },
+    {
+      "raw": "70.1%",
+      "value": 70.1,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "1.0\\% for LoRA, and 70.1\\% on KTH-TIPS-2b vers"
+    },
+    {
+      "raw": "69.0%",
+      "value": 69.0,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "KTH-TIPS-2b versus 69.0\\% for DoRA, with the"
+    },
+    {
+      "raw": "86.2%",
+      "value": 86.2,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "onsistent (CUB-200: 86.2\\% vs.\\ 85.9\\% for DoR"
+    },
+    {
+      "raw": "85.9%",
+      "value": 85.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "UB-200: 86.2\\% vs.\\ 85.9\\% for DoRA; Stanford"
+    },
+    {
+      "raw": "82.9%",
+      "value": 82.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "oRA; Stanford Cars: 82.9\\% vs.\\ 82.7\\%; FGVC-A"
+    },
+    {
+      "raw": "82.7%",
+      "value": 82.7,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "d Cars: 82.9\\% vs.\\ 82.7\\%; FGVC-Aircraft: 46."
+    },
+    {
+      "raw": "46.1%",
+      "value": 46.1,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "7\\%; FGVC-Aircraft: 46.1\\% vs.\\ 45.9\\%), and o"
+    },
+    {
+      "raw": "45.9%",
+      "value": 45.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "rcraft: 46.1\\% vs.\\ 45.9\\%), and on coarse VTA"
+    },
+    {
+      "raw": "73.6%",
+      "value": 73.6,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "-1k SG-LoRA sits at 73.6\\%, within 0.3 points"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "s at 73.6\\%, within 0.3 points of the 73.9\\%"
+    },
+    {
+      "raw": "73.9%",
+      "value": 73.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "n 0.3 points of the 73.9\\% full-fine-tuning re"
+    },
+    {
+      "raw": "86.2%",
+      "value": 86.2,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "s CUB accuracy from 86.2\\% to 85.3\\%, erasing"
+    },
+    {
+      "raw": "85.3%",
+      "value": 85.3,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "racy from 86.2\\% to 85.3\\%, erasing most of th"
+    },
+    {
+      "raw": "85.9%",
+      "value": 85.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "ar wavelets recover 85.9\\%, indicating that th"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "er scales: on ViT-L/16 \\citep{dosovitskiy2021vit} the VTAB gap over Do"
+    },
+    {
+      "raw": "0.2",
+      "value": 0.2,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "ver DoRA shrinks to 0.2 points (76.1\\% vs.\\"
+    },
+    {
+      "raw": "76.1%",
+      "value": 76.1,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "inks to 0.2 points (76.1\\% vs.\\ 75.9\\%) and th"
+    },
+    {
+      "raw": "75.9%",
+      "value": 75.9,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "points (76.1\\% vs.\\ 75.9\\%) and the CUB gap to"
+    },
+    {
+      "raw": "0.1",
+      "value": 0.1,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "and the CUB gap to 0.1 points (88.5\\% vs.\\"
+    },
+    {
+      "raw": "88.5%",
+      "value": 88.5,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "gap to 0.1 points (88.5\\% vs.\\ 88.4\\%), consi"
+    },
+    {
+      "raw": "88.4%",
+      "value": 88.4,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "points (88.5\\% vs.\\ 88.4\\%), consistent with t"
+    },
+    {
+      "raw": "74.8%",
+      "value": 74.8,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "cleanly to L scale (74.8\\% vs.\\ 73.1\\% for LoR"
+    },
+    {
+      "raw": "73.1%",
+      "value": 73.1,
+      "percent": true,
+      "section": "discussion",
+      "snippet": "scale (74.8\\% vs.\\ 73.1\\% for LoRA). On the s"
+    },
+    {
+      "raw": "0.4",
+      "value": 0.4,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "larly modest (VTAB +0.4, CUB +0.3), suggest"
+    },
+    {
+      "raw": "0.3",
+      "value": 0.3,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "st (VTAB +0.4, CUB +0.3), suggesting that p"
+    },
+    {
+      "raw": "7.2",
+      "value": 7.2,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "se peak memory from 7.2\\,GB to 7.8\\,GB on C"
+    },
+    {
+      "raw": "7.8",
+      "value": 7.8,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "ory from 7.2\\,GB to 7.8\\,GB on CUB at batch"
+    },
+    {
+      "raw": "32",
+      "value": 32.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": ",GB on CUB at batch 32, an 8\\% overhead th"
+    },
+    {
+      "raw": "42.0",
+      "value": 42.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "e-tune on CUB takes 42.0 minutes on a single"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "lend back. On ViT-B/16 at a matched 0.5\\% t"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "T-B/16 at a matched 0.5\\% trainable-parameter"
+    },
+    {
+      "raw": "73.6%",
+      "value": 73.6,
+      "percent": true,
+      "section": "introduction",
+      "snippet": ", SG-LoRA reaches a 73.6\\% 19-task average on"
+    },
+    {
+      "raw": "19",
+      "value": 19.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "RA reaches a 73.6\\% 19-task average on VTA"
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "on VTAB-1k, versus 73.2\\% for DoRA and 72.8\\%"
+    },
+    {
+      "raw": "72.8%",
+      "value": 72.8,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "73.2\\% for DoRA and 72.8\\% for LoRA, closing t"
+    },
+    {
+      "raw": "73.9%",
+      "value": 73.9,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "sing the gap to the 73.9\\% full fine-tuning re"
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "DTD, SG-LoRA scores 73.2\\% against 71.8\\% for"
+    },
+    {
+      "raw": "71.8%",
+      "value": 71.8,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "ores 73.2\\% against 71.8\\% for DoRA and 71.0\\%"
+    },
+    {
+      "raw": "71.0%",
+      "value": 71.0,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "71.8\\% for DoRA and 71.0\\% for LoRA, a 1.4-poi"
+    },
+    {
+      "raw": "1.1",
+      "value": 1.1,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "TH-TIPS-2b we see a 1.1-point improvement o"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "cale study on ViT-L/16 and DINOv2-B \\citep{"
+    },
+    {
+      "raw": "0.5%",
+      "value": 0.5,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "\\item At a matched 0.5\\% budget on ViT-B/16,"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "5\\% budget on ViT-B/16, SG-LoRA improves o"
+    },
+    {
+      "raw": "0.8",
+      "value": 0.8,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "proves over LoRA by 0.8 points on VTAB-1k (7"
+    },
+    {
+      "raw": "72.8%",
+      "value": 72.8,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "points on VTAB-1k (72.8\\% $\\rightarrow$ 73.6\\"
+    },
+    {
+      "raw": "73.6%",
+      "value": 73.6,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "2.8\\% $\\rightarrow$ 73.6\\%) and by 2.2 points"
+    },
+    {
+      "raw": "2.2",
+      "value": 2.2,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "row$ 73.6\\%) and by 2.2 points on DTD (71.0\\"
+    },
+    {
+      "raw": "71.0%",
+      "value": 71.0,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "2.2 points on DTD (71.0\\% $\\rightarrow$ 73.2\\"
+    },
+    {
+      "raw": "73.2%",
+      "value": 73.2,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "1.0\\% $\\rightarrow$ 73.2\\%), outperforming DoR"
+    },
+    {
+      "raw": "16",
+      "value": 16.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "cale study on ViT-L/16 and DINOv2-B confirm"
+    },
+    {
+      "raw": "73.1%",
+      "value": 73.1,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "tage persists (DTD: 73.1\\% $\\rightarrow$ 74.8\\"
+    },
+    {
+      "raw": "74.8%",
+      "value": 74.8,
+      "percent": true,
+      "section": "introduction",
+      "snippet": "3.1\\% $\\rightarrow$ 74.8\\% on ViT-L), while VT"
+    },
+    {
+      "raw": "0.9",
+      "value": 0.9,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "orthogonal basis by 0.9 points on CUB-200, a"
+    }
+  ],
+  "unverified": [
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "vs.\\ 85.9\\% on CUB-200, 46.1\\% vs.\\ 45.9\\%"
+    },
+    {
+      "raw": "102",
+      "value": 102.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "% on Oxford Flowers-102, and 92.4\\% vs.\\ 92"
+    },
+    {
+      "raw": "102",
+      "value": 102.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "xford Pets. Flowers-102 is essentially satur"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "e over-read; on CUB-200 the +0.3 over DoRA c"
+    },
+    {
+      "raw": "1.4",
+      "value": 1.4,
+      "percent": false,
+      "section": "results",
+      "snippet": "ng DoRA (71.8\\%) by 1.4 points, AdaptFormer"
+    },
+    {
+      "raw": "1.9",
+      "value": 1.9,
+      "percent": false,
+      "section": "results",
+      "snippet": "6, FacT (71.3\\%) by 1.9, LoRA (71.0\\%) by 2"
+    },
+    {
+      "raw": "2.7",
+      "value": 2.7,
+      "percent": false,
+      "section": "results",
+      "snippet": "and VPT (70.5\\%) by 2.7; it also clears the"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "76.1), while on CUB-200 it narrows from $+1."
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": ") and $+0.3$ on CUB-200 (89.2 $\\to$ 89.5). T"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "ive the gain on CUB-200 at the matched 0.5\\%"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "ign ablation on CUB-200 at a matched 0.5\\% p"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "RA fine-tune on CUB-200 takes 42.0 minutes o"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "y on ViT-B/16 / CUB-200 at batch 32 is 7.8\\,"
+    },
+    {
+      "raw": "102",
+      "value": 102.0,
+      "percent": false,
+      "section": "results",
+      "snippet": "d margin on Flowers-102 and the narrowing fi"
+    },
+    {
+      "raw": "21",
+      "value": 21.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "trained on ImageNet-21k~\\citep{dosovitskiy"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ined datasets — CUB-200-2011~\\citep{wah2011"
+    },
+    {
+      "raw": "102",
+      "value": 102.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "ars, Oxford Flowers-102, Oxford Pets — and"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "oRA on ViT-B/16 CUB-200 at batch 32 is 7.8~G"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "RA fine-tune on CUB-200 completes in 42.0~mi"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "experiments",
+      "snippet": "k and 86.8\\% on CUB-200 with ViT-B/16) serve"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "discussion",
+      "snippet": "ain consistent (CUB-200: 86.2\\% vs.\\ 85.9\\%"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "bird species on CUB-200 \\citep{wah2011cub}, materials on DTD \\"
+    },
+    {
+      "raw": "1.4",
+      "value": 1.4,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "71.0\\% for LoRA, a 1.4-point gap over the"
+    },
+    {
+      "raw": "200",
+      "value": 200.0,
+      "percent": false,
+      "section": "introduction",
+      "snippet": "y 0.9 points on CUB-200, and per-band down-"
+    }
+  ]
+}
