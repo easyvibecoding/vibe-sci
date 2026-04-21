@@ -1,0 +1,53 @@
+{
+  "Summary": "本文提出 AdaptSparse，一種在推理階段根據每個 token 動態選擇 top-k 個 attention head 的稀疏化方法。訓練時學習每層 (layer, head) 的重要度 logits，並透過 Gumbel-softmax 近似 TopK 以支援端到端梯度傳遞。作者在 WMT14 En-De 上報告 BLEU 從 27.3 提升至 27.6 並減少 38% FLOPs，在 GLUE 上以 0.4 點精度換取 42% 推理時間縮減。消融實驗涵蓋 k 值、Gumbel 近似與學習 logit 的必要性。",
+  "Strengths": [
+    "問題動機清晰：input-adaptive 稀疏化相對於靜態剪枝（LayerDrop、StructuredDropout）的差異化點明確。",
+    "實驗涵蓋翻譯與 NLU 兩類任務，並包含 3 個 seed 的標準差報告，消融表合理檢驗了 Gumbel 近似與 learned logits 的貢獻。",
+    "方法簡潔可作為 drop-in 替換，潛在工程價值高；WMT14 上同時提升 BLEU 並降低 FLOPs 的結果若能復現具實用意義。"
+  ],
+  "Weaknesses": [
+    "方法描述不夠嚴謹：公式中 m_{l,h}=TopK(π̂_{l,h}, k) 在單一 head 標量上做 TopK 在語意上不成立（TopK 應作用於 H 維向量）；Gumbel-softmax 對 top-k 的具體鬆弛形式、溫度 schedule、推理時是否切回 hard TopK 等關鍵細節缺失。",
+    "基線過弱且過時：僅與 LayerDrop 與 StructuredDropout 比較，缺少 input-adaptive 與 head-pruning 的關鍵對照（如 Michel et al. 2019 Are Sixteen Heads Really Better than One、Voita et al. 2019、SparseAttention、A-ViT、Mixture-of-Depths、token-level early exit 等）。相關工作章節僅有 3 篇參考文獻。",
+    "評估範圍受限且統計強度不足：僅 base-size 模型、單一翻譯資料集、GLUE 平均無分項、3 seeds 無正式顯著性檢定；作者自承 WMT14 BLEU +0.3 在 ±0.2 的標準差下並非顯著優勢。",
+    "FLOPs 與 wall-clock 的一致性可疑：38% FLOPs 減少卻對應 42% wall-clock 加速，但 dynamic per-token head selection 通常在 GPU 上難以獲得與 FLOPs 近似的實測加速（稀疏 gather 與 mask 開銷），缺乏 kernel 實作與 batch size、序列長度的 profiling 細節。",
+    "GLUE 結果存在一致性問題：BERT-base 的 AdaptSparse 顯示 -0.4 精度，但訓練方法原為 encoder-decoder + Gumbel schedule 設計，如何套用到預訓練 BERT（是否重新 pretrain、或僅 fine-tune 期間學 logits）未說明。"
+  ],
+  "Originality": 2,
+  "Quality": 2,
+  "Clarity": 2,
+  "Significance": 2,
+  "Soundness": 2,
+  "Presentation": 2,
+  "Contribution": 2,
+  "Overall": 4,
+  "Confidence": 4,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "本文提出 AdaptSparse，一種在推理階段根據每個 token 動態選擇 top-k 個 attention head 的稀疏化方法。訓練時學習每層 (layer, head) 的重要度 logits，並透過 Gumbel-softmax 近似 TopK 以支援端到端梯度傳遞。作者在 WMT14 En-De 上報告 BLEU 從 27.3 提升至 27.6 並減少 38% FLOPs，在 GLUE 上以 0.4 點精度換取 42% 推理時間縮減。消融實驗涵蓋 k 值、Gumbel 近似與學習 logit 的必要性。",
+      "Strengths": [
+        "問題動機清晰：input-adaptive 稀疏化相對於靜態剪枝（LayerDrop、StructuredDropout）的差異化點明確。",
+        "實驗涵蓋翻譯與 NLU 兩類任務，並包含 3 個 seed 的標準差報告，消融表合理檢驗了 Gumbel 近似與 learned logits 的貢獻。",
+        "方法簡潔可作為 drop-in 替換，潛在工程價值高；WMT14 上同時提升 BLEU 並降低 FLOPs 的結果若能復現具實用意義。"
+      ],
+      "Weaknesses": [
+        "方法描述不夠嚴謹：公式中 m_{l,h}=TopK(π̂_{l,h}, k) 在單一 head 標量上做 TopK 在語意上不成立（TopK 應作用於 H 維向量）；Gumbel-softmax 對 top-k 的具體鬆弛形式、溫度 schedule、推理時是否切回 hard TopK 等關鍵細節缺失。",
+        "基線過弱且過時：僅與 LayerDrop 與 StructuredDropout 比較，缺少 input-adaptive 與 head-pruning 的關鍵對照（如 Michel et al. 2019 Are Sixteen Heads Really Better than One、Voita et al. 2019、SparseAttention、A-ViT、Mixture-of-Depths、token-level early exit 等）。相關工作章節僅有 3 篇參考文獻。",
+        "評估範圍受限且統計強度不足：僅 base-size 模型、單一翻譯資料集、GLUE 平均無分項、3 seeds 無正式顯著性檢定；作者自承 WMT14 BLEU +0.3 在 ±0.2 的標準差下並非顯著優勢。",
+        "FLOPs 與 wall-clock 的一致性可疑：38% FLOPs 減少卻對應 42% wall-clock 加速，但 dynamic per-token head selection 通常在 GPU 上難以獲得與 FLOPs 近似的實測加速（稀疏 gather 與 mask 開銷），缺乏 kernel 實作與 batch size、序列長度的 profiling 細節。",
+        "GLUE 結果存在一致性問題：BERT-base 的 AdaptSparse 顯示 -0.4 精度，但訓練方法原為 encoder-decoder + Gumbel schedule 設計，如何套用到預訓練 BERT（是否重新 pretrain、或僅 fine-tune 期間學 logits）未說明。"
+      ],
+      "Originality": 2,
+      "Quality": 2,
+      "Clarity": 2,
+      "Significance": 2,
+      "Soundness": 2,
+      "Presentation": 2,
+      "Contribution": 2,
+      "Overall": 4,
+      "Confidence": 4,
+      "Decision": "Reject"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "Summary": "The paper proposes replacing the ReLU activation with its squared variant (ReLU^2) in the MLP blocks of GPT-2 small, and reports a perplexity reduction from 29.4 to 29.1 on WikiText-103. The method is described in a single line of code, and the empirical evaluation consists of one training run with a single random seed. No ablations, baselines beyond vanilla ReLU, theoretical analysis, or computational cost comparisons are provided. The contribution is positioned as a note rather than a full paper.",
+  "Strengths": [
+    "The proposed modification is extremely simple to implement and reproduce, requiring only a one-line change in the MLP block.",
+    "The paper addresses a well-defined and practical question: whether a trivial activation swap can yield measurable language modeling improvements.",
+    "The writing is concise and the claim is unambiguous, making the scope of the contribution easy to assess."
+  ],
+  "Weaknesses": [
+    "The empirical evidence is drastically insufficient: a single seed and a 0.3 PPL gap on one benchmark cannot establish statistical significance, especially given the known high variance of language model training.",
+    "There is no discussion of, or comparison to, prior work on squared/polynomial activations (e.g., Primer's Squared ReLU, So et al. 2021), which directly proposed and evaluated the same activation at much larger scale — the novelty claim is therefore unsubstantiated and the paper appears to rediscover known results without attribution.",
+    "No ablations are provided: no variation in model size, training budget, dataset, or initialization scheme; no analysis of activation statistics, gradient behavior, or training stability under the squared nonlinearity.",
+    "The paper omits all experimental details required for reproducibility: hyperparameters, optimizer, learning rate, training steps, tokenization, compute, and wall-clock cost are not reported.",
+    "No theoretical motivation or intuition is provided for why ReLU^2 should help; the method section is a single line and offers no analysis of the function's properties (non-Lipschitz gradients, unbounded activations, interaction with LayerNorm, etc.)."
+  ],
+  "Originality": 1,
+  "Quality": 1,
+  "Clarity": 2,
+  "Significance": 1,
+  "Soundness": 1,
+  "Presentation": 1,
+  "Contribution": 1,
+  "Overall": 2,
+  "Confidence": 5,
+  "Decision": "Reject",
+  "ensemble_size": 1,
+  "all_reviews": [
+    {
+      "Summary": "The paper proposes replacing the ReLU activation with its squared variant (ReLU^2) in the MLP blocks of GPT-2 small, and reports a perplexity reduction from 29.4 to 29.1 on WikiText-103. The method is described in a single line of code, and the empirical evaluation consists of one training run with a single random seed. No ablations, baselines beyond vanilla ReLU, theoretical analysis, or computational cost comparisons are provided. The contribution is positioned as a note rather than a full paper.",
+      "Strengths": [
+        "The proposed modification is extremely simple to implement and reproduce, requiring only a one-line change in the MLP block.",
+        "The paper addresses a well-defined and practical question: whether a trivial activation swap can yield measurable language modeling improvements.",
+        "The writing is concise and the claim is unambiguous, making the scope of the contribution easy to assess."
+      ],
+      "Weaknesses": [
+        "The empirical evidence is drastically insufficient: a single seed and a 0.3 PPL gap on one benchmark cannot establish statistical significance, especially given the known high variance of language model training.",
+        "There is no discussion of, or comparison to, prior work on squared/polynomial activations (e.g., Primer's Squared ReLU, So et al. 2021), which directly proposed and evaluated the same activation at much larger scale — the novelty claim is therefore unsubstantiated and the paper appears to rediscover known results without attribution.",
+        "No ablations are provided: no variation in model size, training budget, dataset, or initialization scheme; no analysis of activation statistics, gradient behavior, or training stability under the squared nonlinearity.",
+        "The paper omits all experimental details required for reproducibility: hyperparameters, optimizer, learning rate, training steps, tokenization, compute, and wall-clock cost are not reported.",
+        "No theoretical motivation or intuition is provided for why ReLU^2 should help; the method section is a single line and offers no analysis of the function's properties (non-Lipschitz gradients, unbounded activations, interaction with LayerNorm, etc.)."
+      ],
+      "Originality": 1,
+      "Quality": 1,
+      "Clarity": 2,
+      "Significance": 1,
+      "Soundness": 1,
+      "Presentation": 1,
+      "Contribution": 1,
+      "Overall": 2,
+      "Confidence": 5,
+      "Decision": "Reject"
+    }
+  ]
+}
