@@ -1,6 +1,6 @@
 {
   "name": "vibe-sci",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Provider-neutral autonomous research paper writer — ideation, LaTeX writeup, peer review, anti-hallucination numerical audit. Works with claude -p subprocess, any OpenAI-compatible endpoint, or rule-based fallback. Spun out from hermes-sci.",
   "author": {
     "name": "easyvibecoding"

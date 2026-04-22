@@ -1,6 +1,6 @@
 [project]
 name = "vibe-sci"
-version = "0.0.1"
+version = "0.1.0"
 description = "Provider-neutral autonomous research paper writer — ideation, LaTeX writeup, peer review, anti-hallucination numerical audit. Spun out from hermes-sci to remove Hermes-runtime coupling."
 readme = "README.md"
 requires-python = ">=3.12"
