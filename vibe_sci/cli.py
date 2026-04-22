@@ -109,7 +109,16 @@ def cmd_writeup(args) -> int:
     cfg = resolve_backend(backend=args.backend, model_override=args.model)
     apply_env(cfg)
     ideas_data = json.loads(pathlib.Path(args.ideas_json).read_text(encoding="utf-8"))
-    idea_list = ideas_data.get("ideas", ideas_data if isinstance(ideas_data, list) else [])
+    # Accept both shapes: ideate's own output is {"num_ideas": N, "ideas": [...]},
+    # but user-authored fixtures often are a bare top-level list. Check the type
+    # first — calling .get() on a list raises AttributeError (the default-arg
+    # expression doesn't save us because Python eagerly evaluates both sides).
+    if isinstance(ideas_data, dict):
+        idea_list = ideas_data.get("ideas", [])
+    elif isinstance(ideas_data, list):
+        idea_list = ideas_data
+    else:
+        idea_list = []
     if args.idx >= len(idea_list):
         print(f"❌ idx={args.idx} out of range (have {len(idea_list)} ideas)", file=sys.stderr)
         return 2

@@ -1,0 +1,129 @@
+# Unicode → LaTeX math-command mapping.
+#
+# Consumed by vibe_sci/sanitize/unicode_math.py. Applied per-character:
+# prose occurrences get wrapped as $\cmd$; occurrences inside an existing
+# $...$ region drop the wrap. article.cls + inputenc cannot compile raw
+# Greek / math symbols, so the LLM handing us "accuracy ≥ 95%" must become
+# "accuracy $\geq$ 95\%" before pdflatex sees it.
+#
+# Only symbols likely to appear in an ML research paper are listed.
+# Extend per-project as needed; no code change required.
+
+# ── Greek lowercase ──────────────────────────────
+α: \alpha
+β: \beta
+γ: \gamma
+δ: \delta
+ε: \varepsilon
+ϵ: \epsilon
+ζ: \zeta
+η: \eta
+θ: \theta
+ϑ: \vartheta
+ι: \iota
+κ: \kappa
+λ: \lambda
+μ: \mu
+ν: \nu
+ξ: \xi
+π: \pi
+ϖ: \varpi
+ρ: \rho
+ϱ: \varrho
+σ: \sigma
+ς: \varsigma
+τ: \tau
+υ: \upsilon
+φ: \varphi
+ϕ: \phi
+χ: \chi
+ψ: \psi
+ω: \omega
+
+# ── Greek uppercase ──────────────────────────────
+Γ: \Gamma
+Δ: \Delta
+Θ: \Theta
+Λ: \Lambda
+Ξ: \Xi
+Π: \Pi
+Σ: \Sigma
+Υ: \Upsilon
+Φ: \Phi
+Ψ: \Psi
+Ω: \Omega
+
+# ── Relations ────────────────────────────────────
+"≥": \geq
+"≤": \leq
+"≠": \neq
+"≈": \approx
+"≡": \equiv
+"∝": \propto
+"∞": \infty
+"∈": \in
+"∉": \notin
+"⊂": \subset
+"⊆": \subseteq
+"⊃": \supset
+"⊇": \supseteq
+"∀": \forall
+"∃": \exists
+
+# ── Operators ────────────────────────────────────
+"±": \pm
+"∓": \mp
+"×": \times
+"÷": \div
+"·": \cdot
+"∘": \circ
+"⊕": \oplus
+"⊗": \otimes
+"∇": \nabla
+"∂": \partial
+"∑": \sum
+"∏": \prod
+"∫": \int
+"∪": \cup
+"∩": \cap
+"∅": \emptyset
+
+# ── Arrows ───────────────────────────────────────
+"→": \to
+"←": \leftarrow
+"↔": \leftrightarrow
+"⇒": \Rightarrow
+"⇐": \Leftarrow
+"⇔": \Leftrightarrow
+"↦": \mapsto
+
+# ── Super / subscript digits + signs ─────────────
+"⁰": "^{0}"
+"¹": "^{1}"
+"²": "^{2}"
+"³": "^{3}"
+"⁴": "^{4}"
+"⁵": "^{5}"
+"⁶": "^{6}"
+"⁷": "^{7}"
+"⁸": "^{8}"
+"⁹": "^{9}"
+"⁺": "^{+}"
+"⁻": "^{-}"
+"₀": "_{0}"
+"₁": "_{1}"
+"₂": "_{2}"
+"₃": "_{3}"
+"₄": "_{4}"
+"₅": "_{5}"
+"₆": "_{6}"
+"₇": "_{7}"
+"₈": "_{8}"
+"₉": "_{9}"
+
+# ── Miscellaneous ────────────────────────────────
+"°": ^{\circ}
+"′": ^{\prime}
+"″": ^{\prime\prime}
+"√": \sqrt{}
+"…": \ldots

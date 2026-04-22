@@ -7,11 +7,14 @@ Order matters:
   3. strip CJK leakage
   4. unwrap unsupported package commands (siunitx, etc.)
   5. markdown → LaTeX (bold / italic / heading)
-  6. strip bad \\input \\include
-  7. wrap lonely \\item
-  8. balance inline math — drop orphan `$` from truncated LLM output
+  6. Unicode → LaTeX math (≥ → $\\geq$, ρ → $\\rho$, x² → x$^{2}$).
+     Runs after markdown so md_to_latex doesn't see already-wrapped `$`s,
+     and before strip_bad_commands so `\\geq` etc. aren't flagged
+  7. strip bad \\input \\include
+  8. wrap lonely \\item
+  9. balance inline math — drop orphan `$` from truncated LLM output
      BEFORE the escape pass, whose math-segment scanner assumes balanced `$`
-  9. escape prose specials (%, &, <, >, _) — runs last so earlier passes'
+ 10. escape prose specials (%, &, <, >, _) — runs last so earlier passes'
      output is also escaped
 
 To add a pass: write a module with a `str → str` function, append to
@@ -31,6 +34,7 @@ from .markdown import md_to_latex
 from .math_balance import balance_inline_math
 from .packages import apply_package_fallbacks
 from .reasoning import strip_reasoning
+from .unicode_math import convert_unicode_math
 
 Pass = Callable[[str], str]
 
@@ -40,6 +44,7 @@ SANITIZE_PIPELINE: list[Pass] = [
     strip_cjk,
     apply_package_fallbacks,
     md_to_latex,
+    convert_unicode_math,
     strip_bad_commands,
     wrap_lonely_items,
     balance_inline_math,

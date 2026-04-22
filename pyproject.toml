@@ -49,6 +49,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.5"]
+# review.py::_extract_pdf_text needs at least one PDF text extractor; both
+# are pure-Python, pick either. Raised as "pip install 'vibe-sci[review]'"
+# in the error message when a user tries to review a .pdf without either
+# being installed.
+review = ["pypdf>=3.0", "pymupdf4llm>=0.1"]
 
 [project.scripts]
 vibe-sci = "vibe_sci.cli:main"
